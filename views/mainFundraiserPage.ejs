@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <title><%= fundName %></title>
+  </head>
+  <body>
+    <h1>Hi! Come support <%= fundName %>!</h1>
+    <p>Insert stripe api payment thing here</p>
+    <h2>How are donations used?</h2>
+    <p>
+      Each donation, regardless of size, is crucial how we create a supportive
+      environment for success and growth. Your support goes beyond just funding
+      a program; it's about building a foundation for achievement and new
+      opportunities.
+    </p>
+    <p> Dollars raised: <span id="raised">   </span></p>
+    <a href = /checkout/<%=name%>/?donate=1000 class="button">Donate $1000 Now</a>
+    <a href = /checkout/<%=name%>/?donate=500 class="button">Donate $500 Now</a>
+    <a href = /checkout/<%=name%>/?donate=100 class="button">Donate $100 Now</a>
+    <a href = /checkout/<%=name%>/?donate=50 class="button">Donate $50 Now</a>
+    <a href = /checkout/<%=name%>/?donate=35 class="button">Donate $35 Now</a>
+    <a href = /checkout/<%=name%> class="button">Donate Custom Amount Now</a>
+    <script>
+      fetch("/getbalance/<%=name%>", {
+        method: "GET", // Default method is GET, so we can ignore specifying it
+      })
+        .then((response) => {
+          // Check if response status is okay
+          if (response.ok) {
+            return response.json(); // Parse response body as JSON
+          } else {
+            throw new Error("Network response was not ok.");
+          }
+        })
+        .then((data) => {
+          console.log(data.fundsCents/100 +" dollars raised"); // Display the response data
+          document.getElementById("raised").innerHTML = "$" + data.fundsCents/100;
+        })
+        .catch((error) => {
+          console.error("There was a problem with the fetch operation:", error);
+        });
+    </script>
+    <script src="https://js.stripe.com/v3/"></script>
+  </body>
+</html>
