@@ -1,7 +1,6 @@
-GET HTTP://localhost:8000/checkout/1
+GET HTTP://localhost:80/user/arthur
 
 ### //adding this without any spaces in front of it lets the extension know that the next thing is also a sendable request. 
-
 
 POST http://localhost:8000/api/auth HTTP/1.1
 content-type: application/json

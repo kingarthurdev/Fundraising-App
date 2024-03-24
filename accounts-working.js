@@ -9,9 +9,12 @@ app.set('view engine', 'ejs');
 app.use("/", express.static('test'));
 app.use(express.json()); // essential to use req.body
 
-  
 
+app.disable('x-powered-by'); // prevent enumeration of what backend is used
 const jwt = require('jsonwebtoken');
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
+
 
 
 /*var session = require('express-session');
@@ -66,7 +69,7 @@ async function createUser(name, email, id, password) { // I think should return 
 
 async function authenticateuser(email, password) {
     return new Promise((resolve, reject) => {
-        userSQL.query('SELECT * FROM users WHERE email = ?;', [email], (err, res) => {
+        userSQL.query('SELECT * FROM users WHERE email = ?;', [email], (err, res) => { //todo: check to make sure not vuln
             if (err) {
                 console.log(err)
                 reject(err);
@@ -117,7 +120,7 @@ app.post("/api/auth", async (req, res) => {
         const token = jwt.sign({ userId: result }, process.env.JWT_SECRET_KEY, {
             expiresIn: '2h',
         });
-        res.setHeader('Set-Cookie', `authentication=${token}; HttpOnly`); //sets cookie
+        res.setHeader('Set-Cookie',  `authentication=${token}; Secure; Path=/; Max-Age=99999; SameSite=strict;`); //sets cookie
         res.status(200).send("Authentication Succeeded.");
     }).catch(
         err => {
@@ -131,12 +134,15 @@ app.post("/api/auth", async (req, res) => {
 });
 
 app.get("/dashboard", async (req, res) => {
-    const token = req.header('Authorization');
+    //const token = req.header('Authorization');
+    const token = req.cookies.authentication;
     if (!token) return res.status(401).json({ error: 'Access denied' });
+
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-        req.userId = decoded.userId;
-        console.log(req.userid);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);  // important that you use jwt.verify not jwt.decode, decode doesn't verify! 
+        //MAKE SURE TO SANITIZE USER ID! COULD BE CODE INJECTION!
+        console.log(decoded.userId);
+        res.status(200).send("Yay works!")
         //next();
     } catch (error) {
         res.status(401).json({ error: 'Invalid token' });
@@ -149,6 +155,7 @@ function isEmailValid(email) {
     if (!email)
         return false;
 
+    //TODO: verify email object type, prevent crashing errors!
     if (email.length > 254)
         return false;
 

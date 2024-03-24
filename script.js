@@ -17,11 +17,16 @@ todo: fix verify payment function, i think I need to use amount_recieved thing, 
 
 require('dotenv').config();
 const bcrypt = require('bcrypt'); //for user pass encryption
-
+const port = 8000;
 const express = require('express')
 const mysql = require('mysql')
 const app = express();
-const port = 8000;
+app.disable('x-powered-by'); // prevent enumeration of what backend is used
+app.listen(port, () => {
+  console.log(`Fundraiser app listening on port ${port}`)
+})
+app.use(express.json());//allow request body parsing
+
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 
@@ -33,11 +38,6 @@ const connection = mysql.createPool({
   database: 'fundraisers'
 });
 
-
-app.listen(port, () => {
-  console.log(`Fundraiser app listening on port ${port}`)
-})
-app.use(express.json());
 
 //NOTE: DO NOT USE CONNECTION.CONNECT() AND CONNECTION.END() BECAUSE IT CAUSES THE CODE TO BREAK!
 //Note to future self if hosting on another computer: if it throws Client does not support authentication protocol requested by server; consider upgrading MySQL client visit https://stackoverflow.com/questions/50093144/mysql-8-0-client-does-not-support-authentication-protocol-requested-by-server
