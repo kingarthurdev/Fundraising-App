@@ -1,0 +1,89 @@
+<html>
+
+<head>
+    <style>
+        #wrong {
+            color: red;
+            padding: 0;
+            margin-bottom: 10px;
+            margin-top: -10px;
+        }
+    </style>
+</head>
+
+<body>
+    <form onsubmit="return false;">
+        <label>Sign up:</label><br>
+        <input type="text" id="fname" placeholder="First Name"><br>
+        <input type="text" id="lname" placeholder="Last Name"><br>
+        <input type="text" id="email" placeholder="Email Address"><br>
+        <input type="password" id="pass" placeholder="Password"><br><br>
+        <p id="wrong" style="display:none;">Your password or email is incorrect. Please try again.</p>
+        <input type="submit" id="login" value="Submit">
+    </form>
+    <script>
+
+        fetch("/api/auth", {
+            method: "POST",
+            mode: "cors",
+            cache: "no-cache",
+            credentials: "same-origin",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            redirect: "follow",
+        }).then(r => {
+            if (r.status == 200) {
+                window.location = "/dashboard";
+            }
+        });
+
+
+        document.getElementById("login").addEventListener("click", function () {
+            let data = { "email": document.getElementById("email").value, "password": document.getElementById("pass").value, "name": document.getElementById("fname").value + " " + document.getElementById("lname").value };
+            const response = fetch("/api/createuser", {
+                method: "POST",
+                mode: "cors",
+                cache: "no-cache",
+                credentials: "same-origin",
+                headers: {
+                    "Content-Type": "application/json",
+
+                },
+                redirect: "follow",
+                referrerPolicy: "no-referrer",
+                body: JSON.stringify(data),
+            }).then(r => {
+                if (r.status == 200) {
+                    data = { "email": document.getElementById("email").value, "password": document.getElementById("pass").value };
+                    fetch("/api/auth", {
+                        method: "POST",
+                        mode: "cors",
+                        cache: "no-cache",
+                        credentials: "same-origin",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(data),
+                        redirect: "follow",
+                    }).then(r => {
+                        if (r.status == 200) {
+                            window.location = "/dashboard";
+                        }
+                    });
+                } else {
+                    document.getElementById("wrong").style = "display:block;";
+                }
+            });
+
+
+        });
+    </script>
+
+
+
+
+
+</body>
+
+</html>

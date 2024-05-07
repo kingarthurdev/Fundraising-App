@@ -25,93 +25,207 @@
   }
 }
 */
-
-#cart{
-  background-color:lightgray;
-  width:30vw;
-  float: right;
-  padding-left:16px;
-  padding-top:5px;
-
+body * {
+  font-family: CircularXXWeb, Trebuchet, Helvetica, Arial, sans-serif;
 }
 
-#payment{
-  float: left;
+body {
+  overflow-x: hidden;
 }
-#header{
-  height:70px;
-  /* background-color: red; */
-  display:flex;
+
+#header {
+  width: 100%;
+  position: absolute;
+  top: 0px;
+  height: 70px;
+  display: flex;
   border-bottom: 1px solid;
-  border-color:lightgrey;
+  border-color: lightgrey;
   justify-content: space-between;
+  margin-bottom: 0px;
 }
-#header h2, #header h2 a{
-  color:grey;
+
+#header h2,
+#header h2 a {
+  color: grey;
   font-size: 20px;
-  padding-left:16px;
-  align-self:center;
-  margin-right:32px;
+  padding-left: 16px;
+  align-self: center;
+  margin-right: 32px;
 }
 
 #primary-body {
   display: flex;
   justify-content: center;
+  margin-top: 0px;
+  position: relative;
+  top: 62px;
 }
-#fundName{
-  font-size: 24px;
-  font-weight: 600;
-  width: 500px;
-  height: 100px;
-  max-width: 400px;
-  margin-left: 10px;
-  justify-content: center;
-  display: flex;
-  flex-direction: column;
-  transform: translateY(-10px);
-}
-#homeLogo{
+
+#homeLogo {
   width: 60px;
-  height:60px;
-  border-radius:3px;
-  position:relative;
-  top:50%;
-  transform:translate(0,-50%);
-  left:32px;
-  opacity:0; /*hide for now*/
+  height: 60px;
+  border-radius: 3px;
+  position: relative;
+  top: 50%;
+  transform: translate(0, -50%);
+  left: 32px;
+  opacity: 0;
+  /*hide for now*/
 }
 
-#fundImg{
-  width:80px;
-  height:80px;
-  border-radius:10px;
-}
-label{
-  font-size:1rem;
+form label {
+  font-size: 1rem;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  color:#30313d;
-}
-.extraforms{
-  padding:.75rem;
-  border-radius:5px;
-  width:100%;
-  display:block;
-  margin-bottom:.75rem;
-  border: 1px solid #e6e6e6;
-  font-size:.93rem;
+  color: #30313d;
 }
 
-input[type=number]::-webkit-inner-spin-button, 
+.extraforms {
+  padding: .75rem;
+  border-radius: 5px;
+  width: 100%;
+  display: block;
+  margin-bottom: .75rem;
+  border: 1px solid #e6e6e6;
+  font-size: .93rem;
+}
+
+input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 /* For other browsers */
 input[type=number] {
-    -moz-appearance: textfield; /* Firefox */
-    appearance: textfield; /* Other */
+  -moz-appearance: textfield;
+  /* Firefox */
+  appearance: textfield;
+  /* Other */
 }
+
+
+.itemtotals {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  margin-top: -15px;
+  padding-bottom:5px;
+}
+
+.item {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.littleitem * {
+  font-weight: 520;
+  font-size: 1em;
+  margin-top: 7px;
+}
+
+#cartmssg {
+  font-size: 1.1rem;
+  margin-left: 20px;
+}
+
+#cartmssg span {
+  font-weight: 550;
+}
+
+#fundImg {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  margin-right: 10px;
+  margin-left: 20px;
+}
+
+#cart {
+  position: relative;
+  top: 91px;
+  background-color: #f2f0f0;
+  width: 30vw;
+  padding-top: 5px;
+  margin-left: 20px;
+  border-radius: 7px;
+  height: fit-content;
+  padding-bottom:10px;
+}
+
+#paymentdetails * {
+  margin: 7px;
+}
+
+#paymentdetails p {
+  color: grey;
+  margin-bottom: 16px;
+}
+
+#paymentdetails h2 {
+  margin-top: 22px;
+}
+
+#submit {
+  margin-top: 25px;
+  width: 93%;
+  margin-bottom:10px;
+}
+
+#covercardfees {
+  margin-left: 0px;
+}
+
+#processingfeescheck {
+  display: flex;
+  align-items: center;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+#aboutprocessing {
+  width: 100%;
+  height: fit-content;
+  padding: 15px;
+  background-color: rgb(230 249 255);
+  border-radius: 6px;
+  margin-top: 6px;
+  border-style: solid;
+  border-width: 1px;
+  display: none;
+}
+
+#giveatip {
+  display: flex;
+  align-items: center;
+  position: relative;
+  left: -20px;
+  padding: 20px;
+  padding-top: 10px;
+  margin-top: 7px;
+  width: calc(100% + 40px);
+}
+#percenttip {
+  width: 85px;
+  height: 40px;
+  border-radius: 4px;
+  font-size: 1em;
+  transform: translateY(-5px);
+  margin-top: 0px;
+  padding-top: 1px;
+}
+#hiddensubmit{
+  width:1px;
+  height:1px;
+  display:none;
+}
+
+/*#amountdropdownmenu{
+  height:44px;
+  background-color: red;
+  padding:10px;
+}*/
 
 /*
 My code above
@@ -125,14 +239,14 @@ My code above
   box-sizing: border-box;
 }
 
-body {
+payment-element * {
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
   justify-content: center;
   align-content: center;
   height: 100vh;
-  margin:0px;
+  margin: 0px;
 }
 
 form {
@@ -151,7 +265,7 @@ form {
 
 #payment-message {
   /*color: rgb(105, 115, 134);*/
-  color:red;
+  color: red;
   font-size: 16px;
   line-height: 20px;
   padding-top: 12px;
@@ -179,9 +293,11 @@ button {
   box-shadow: 0px 4px 5.5px 0px rgba(0, 0, 0, 0.07);
   width: 100%;
 }
+
 button:hover {
   filter: contrast(115%);
 }
+
 button:disabled {
   opacity: 0.5;
   cursor: default;
@@ -193,6 +309,7 @@ button:disabled {
 .spinner:after {
   border-radius: 50%;
 }
+
 .spinner {
   color: #ffffff;
   font-size: 22px;
@@ -206,11 +323,13 @@ button:disabled {
   -ms-transform: translateZ(0);
   transform: translateZ(0);
 }
+
 .spinner:before,
 .spinner:after {
   position: absolute;
   content: "";
 }
+
 .spinner:before {
   width: 10.4px;
   height: 20.4px;
@@ -223,6 +342,7 @@ button:disabled {
   -webkit-animation: loading 2s infinite ease 1.5s;
   animation: loading 2s infinite ease 1.5s;
 }
+
 .spinner:after {
   width: 10.4px;
   height: 10.2px;
@@ -241,16 +361,19 @@ button:disabled {
     -webkit-transform: rotate(0deg);
     transform: rotate(0deg);
   }
+
   100% {
     -webkit-transform: rotate(360deg);
     transform: rotate(360deg);
   }
 }
+
 @keyframes loading {
   0% {
     -webkit-transform: rotate(0deg);
     transform: rotate(0deg);
   }
+
   100% {
     -webkit-transform: rotate(360deg);
     transform: rotate(360deg);

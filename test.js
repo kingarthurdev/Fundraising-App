@@ -7,7 +7,38 @@ const app = express();
 const port = 8000;
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
+async function a(){
+    /*const account = await stripe.accounts.create({
+        type: 'express',
+        country: 'US',
+        email: 'jenny.rosen@example.com',
+        capabilities: {
+          card_payments: {
+            requested: true,
+          },
+          transfers: {
+            requested: true,
+          },
+        },
+      });
+      console.log(account);
+*/
+      const accountLink = await stripe.accountLinks.create({
+        account: 'acct_1P2z5VB4t7JHWBgS',
+        refresh_url: 'https://example.com/reauth',
+        return_url: 'https://example.com/return',
+        type: 'account_onboarding',
+      });
+      console.log(accountLink);
+}
 
+a();
+
+
+
+
+
+/*
 //TO-DO: make sure that the names of each fundraiser are in proper format (first letter of each word except certain ones are capitalized. )
 const connection = mysql.createPool({
     host: 'localhost',
@@ -15,6 +46,15 @@ const connection = mysql.createPool({
     password: process.env.DB_PASSWORD,
     database: 'fundraisers'
 });
+
+
+let a = '9999 or 1 = 1; -- '
+connection.query(`select * from campaigns where id = ${mysql.escape(a)}`, (err, res)=>{
+    console.log(res, err);
+});
+
+
+
 
 app.post("/verify-payment", async (req, res) => {
 
@@ -108,3 +148,4 @@ async function updateFunds(fundId, paymentId) {
 
 
 
+*/

@@ -1,0 +1,23 @@
+{
+  "name": "stripe-sample-code",
+  "version": "1.0.0",
+  "description": "Build a full, working Connect integration. Here are some basic scripts you can use to build and run the application.",
+  "scripts": {
+    "start-client": "parcel watch",
+    "start-server": "node server.js",
+    "start": "concurrently \"yarn start-client\" \"yarn start-server\"",
+    "build": "parcel build"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "4.1.2",
+    "parcel": "^2.8.3"
+  },
+  "source": "public/index.html",
+  "dependencies": {
+    "express": "^4.17.1",
+    "stripe": "13.4.0",
+    "@stripe/connect-js": "3.3.5"
+  }
+}

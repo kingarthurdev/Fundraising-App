@@ -8,13 +8,6 @@ todo: fix verify payment function, i think I need to use amount_recieved thing, 
 
 */
 
-
-
-
-
-
-
-
 require('dotenv').config();
 const bcrypt = require('bcrypt'); //for user pass encryption
 const port = 8000;
@@ -27,6 +20,15 @@ app.listen(port, () => {
 })
 app.use(express.json());//allow request body parsing
 
+app.set('view engine', 'ejs');
+app.use("/", express.static('public', {
+  extensions: ['html']
+}));
+app.disable('x-powered-by'); // prevent enumeration of what backend is used
+const jwt = require('jsonwebtoken');
+const cookieParser = require("cookie-parser");
+app.use(cookieParser());
+
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 
@@ -37,6 +39,7 @@ const connection = mysql.createPool({
   password: process.env.DB_PASSWORD,
   database: 'fundraisers'
 });
+
 
 
 //NOTE: DO NOT USE CONNECTION.CONNECT() AND CONNECTION.END() BECAUSE IT CAUSES THE CODE TO BREAK!
@@ -62,8 +65,7 @@ WHERE camid = mysql.escape();
 
 */
 
-app.set('view engine', 'ejs');
-app.use("/", express.static('public'));
+
 
 
 app.get('/fund/:name', async (req, res) => {
