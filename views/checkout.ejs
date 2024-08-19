@@ -2,30 +2,30 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8" />
-  <title>
-    <%= fundName %>
-  </title>
-  <meta name="description" content=<%=fundName %> />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="stylesheet" href="/checkout.css" />
-  <script src="https://js.stripe.com/v3/"></script>
-  <script src="/checkout.js" defer></script>
+    <meta charset="utf-8" />
+    <title>
+        <%= fundName %>
+    </title>
+    <meta name="description" content=<%=fundName %> />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="/checkout.css" />
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="/checkout.js" defer></script>
 </head>
 
 <body>
-  <div id="header">
-      <h2><a style="text-decoration:none" href="/fund/<%= fundId %>">Return to Fundraiser Home</a></h2>
-      <h2>
-          <svg style="height:16px" xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
-              <path fill="#808080"
-                  d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z" />
-          </svg>
-          Secure Checkout
-      </h2>
-  </div>
-  <!--
+    <div id="header">
+        <h2><a style="text-decoration:none" href="/fund/<%= fundId %>">Return to Fundraiser Home</a></h2>
+        <h2>
+            <svg style="height:16px" xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                <path fill="#808080"
+                    d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z" />
+            </svg>
+            Secure Checkout
+        </h2>
+    </div>
+    <!--
     <div style="display:inline;">
         <img  style="display:inline;" id="fundImg" src="/placeholder.png" />
         <div style="display:inline; font-size: 24px;
@@ -34,132 +34,140 @@
         height: 100px;"><%= fundName %></div>
     </div>-->
 
-  <!-- Display a payment form -->
-  <div id="primary-body">
-      <div id=" payment">
-          <div id="paymentdetails">
-              <h2>Payment Details</h2>
-              <p>Please complete your payment details below</p>
-          </div>
-          <form id="payment-form">
-            <label for="amount" class="label"><strong>Donation Amount (USD)</strong></label>
-              <span style="display:inline;">
-                  <input id="amount" class="extraforms" pattern="[0-9]*" placeholder="$100" type="number" value="100"
-                      required />
-              </span>
+    <!-- Display a payment form -->
+    <div id="primary-body">
+        <div id=" payment">
+            <div id="paymentdetails">
+                <h2>Payment Details</h2>
+                <p>Please complete your payment details below</p>
+            </div>
+            <form id="payment-form">
+                <label for="amount" class="label"><strong>Donation Amount (USD)</strong></label>
+                <span style="display:inline;">
+                    <input id="amount" class="extraforms" pattern="[0-9]*" placeholder="$100" type="number" value="100"
+                        required />
+                </span>
 
-              <label for="name" class="label">Full Name</label>
-              <input id="name" class="extraforms" type="text" placeholder="Your Name" required />
+                <label for="name" class="label">Full Name</label>
+                <input id="name" class="extraforms" type="text" placeholder="Your Name" required />
 
-              <label for="email" class="label">Email</label>
-              <input id="email" class="extraforms" placeholder="you@email.com" type="email" required />
-
-              
-
-              <div id="payment-element">
-                  <!--Stripe.js injects the Payment Element-->
-              </div>
-              <button id="hiddensubmit">
-              </button>
-          </form>
-      </div>
-      <div id="cart">
-          <div style="display:flex; flex-direction:row; align-items: center; margin-bottom:0px;">
-              <!--<img id="fundImg" src="/placeholder.png"/>-->
-          </div>
-          <div class="itemtotals">
-              <div class="item mainitem">
-                  <div>
-                      <h2>Total:</h2>
-                  </div>
-                  <div>
-                      <h2 id="totalamt">$104.00</h2>
-                  </div>
-              </div>
-              <div style="width:100%;height:.7px;background: #bfbfbf;position:relative;left:-8px;"></div>
-              <div class="item littleitem">
-                  <div style="font-weight:600 !important;">Your Donation:</div>
-                  <div id="donationAmount">$100.00</div>
-              </div>
-              <!--<div class="item littleitem">
-          <div>Card Processing Fee:</div>
-          <div id="feeamt">$3.00</div>
-        </div>-->
+                <label for="email" class="label">Email</label>
+                <input id="email" class="extraforms" placeholder="you@email.com" type="email" required />
 
 
-              <div>
-                  <div id="processingfeescheck" onclick="updateCoverFees()">
-                      <input type="checkbox" id="covercardfees" name="covercardfees"
-                          value="Cover Card Processing Fees?" checked="true">
 
-                      <div>
-                          <label for="covercardfees"><span style="font-weight:600;">Cover card processing fees (4%)
-                              </span></label>
-                          <span style="text-decoration: underline; " onclick="toggleAboutProcessing()">Learn more</span>
-                      </div>
-                  </div>
-                  <div style="color:rgb(57, 57, 57); margin-top:2px; font-size:.95rem">So that 100% of your donation
-                      goes to <%= fundName %></div>
-                  <div id="aboutprocessing">
-                      Processing fees are always charged by companies like Visa and MasterCard, no matter what
-                      platform you use. RoyalFundraising makes the processing fees 100% transparent and takes a 0%
-                      platform fee on top.
-                  </div>
+                <div id="payment-element">
+                    <!--Stripe.js injects the Payment Element-->
+                </div>
+                <button id="hiddensubmit">
+                </button>
+            </form>
+        </div>
+        <div id="cart">
+            <div style="display:flex; flex-direction:row; align-items: center; margin-bottom:0px;">
+                <!--<img id="fundImg" src="/placeholder.png"/>-->
+            </div>
+            <div class="itemtotals">
+                <div class="item mainitem">
+                    <div>
+                        <h2>Total:</h2>
+                    </div>
+                    <div>
+                        <h2 id="totalamt">$104.00</h2>
+                    </div>
+                </div>
+                <div style="width:100%;height:.7px;background: #bfbfbf;position:relative;left:-8px;"></div>
+                <div class="item littleitem">
+                    <div style="font-weight:600 !important;">Your Donation:</div>
+                    <div id="donationAmount">$100.00</div>
+                </div>
+                <div class="item littleitem">
+                    <div>Card Processing Fee:</div>
+                    <div id="feeamt">$4.00</div>
+                </div>
+                <div class="item littleitem">
+                    <div>Tip:</div>
+                    <div id="tipamt">$15.00</div>
+                </div>
+                <div style="width:100%;height:.7px;background: #bfbfbf;position:relative;left:-8px; margin-top:10px; margin-bottom:10px;" ></div>
+                <div>
+                    <div id="processingfeescheck" onclick="updateCoverFees()">
+                        <input type="checkbox" id="covercardfees" name="covercardfees"
+                            value="Cover Card Processing Fees?" checked="true">
+
+                        <div>
+                            <label for="covercardfees"><span style="font-weight:600;">Cover card processing fees (4%)
+                                </span></label>
+                            <span style="text-decoration: underline; " onclick="toggleAboutProcessing()">Learn
+                                more</span>
+                        </div>
+                    </div>
+                    <div style="color:rgb(57, 57, 57); margin-top:2px; font-size:.95rem">So that 100% of your donation
+                        goes to <%= fundName %>
+                    </div>
+                    <div id="aboutprocessing">
+                        Processing fees are always charged by companies like Visa and MasterCard, no matter what
+                        platform you use. RoyalFundraising makes the processing fees 100% transparent and takes a 0%
+                        platform fee on top.
+                    </div>
 
 
-                  <div id="giveatip">
-                      <div>
-                          <div style="font-weight:600;">
-                              Add a tip to support RoyalFundraising
-                          </div>
-                          <div style="color:rgb(57, 57, 57);font-size:.95rem">
-                              RoyalFundraising does not charge any platform fees and relies on your generosity to
-                              support this free service.
-                          </div>
-                          
-                      </div>
+                    <div id="giveatip">
+                        <div>
+                            <div style="font-weight:600;">
+                                Add a tip to support RoyalFundraising?
+                            </div>
+                            <div style="color:rgb(57, 57, 57);font-size:.95rem">
+                                RoyalFundraising does not charge any platform fees and relies on your generosity to
+                                support this free service.
+                            </div>
 
-                      <div id="amountdropdownmenu">
-                          <select name="percenttip" id="percenttip" onchange="updateTipPercent(this.value)">
-                              <option value="18">18%</option>
-                              <option value="15" selected>15%</option>
-                              <option value="10">10%</option>
-                              <option value="0">Other</option>
-                          </select>
-                      </div>
-                  </div>
-                  <input id="amount2" style="display: block; margin-top:-13px;" class="extraforms" pattern="[0-9]*" placeholder="$0" type="number"/>
+                        </div>
 
-              </div>
-              <div>
+                        <div id="amountdropdownmenu">
+                            <select name="percenttip" id="percenttip" onchange="updateTipPercent(this.value)">
+                                <option value="18">18%</option>
+                                <option value="15" selected>15%</option>
+                                <option value="10">10%</option>
+                                <option value="0">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <input id="amount2" style="display: block; margin-top:-13px;" class="extraforms" pattern="[0-9]*"
+                        placeholder="$0" type="number" />
 
-              </div>
+                </div>
+                <div>
 
-              <!--<div class="item littleitem">
+                </div>
+
+
+                <!--<div class="item littleitem">
           <div>Tip:</div>
           <div id="tipamt">$1.00</div>
         </div>-->
-          </div>
-          <div id="cartmssg">Thank you for supporting <span>
-                  <%= fundName %>
-              </span></div>
+            </div>
+            <div id="cartmssg">Thank you for supporting <span>
+                    <%= fundName %>
+                </span></div>
 
-          <center>
-              <button id="submit">
-                  <div class="spinner hidden" id="spinner"></div>
-                  <span id="button-text">Donate</span>
-              </button>
-              <div id="payment-message" class="hidden"></div>
-          </center>
+            <center>
+                <button id="submit">
+                    <div class="spinner hidden" id="spinner"></div>
+                    <span id="button-text">Donate</span>
+                </button>
+                <div id="payment-message" class="hidden"></div>
+            </center>
 
-          <!--
+            <!--
             <h2>Total: $104.00</h2>
             <div style="width:100%;height:.7px;background: #bfbfbf;position:relative;left:-8px;"></div>
             <p>Your Donation: <span id="donationAmount">$100.00</span></p>
             <p>Card Processing Fees: <span id="donationAmount">$3.00</span></p>
             <p>Tip: <span id="donationAmount">$1.00</span></p>
             -->
-      </div>
-  </div>
+        </div>
+    </div>
 </body>
+
 </html>

@@ -1,0 +1,145 @@
+<head>
+
+    <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+            rel="stylesheet">
+        <link href="/campaign.css" rel="stylesheet">
+        <link rel="icon" href="/bowiebpa.jpg" type="image/icon type">
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    </head>
+    <style>
+        .container {
+            padding-left: 20px;
+            padding-right: 20px;
+
+            width: 100%;
+            max-height: 80vh;
+            max-width: 30rem;
+            background-color: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: left;
+            justify-content: center;
+            flex-direction: column;
+            z-index: 9999;
+        }
+
+        .container .topbar2 img {
+            margin: 10px;
+            margin-right: -5px;
+        }
+
+        .actionIcon img {
+            width: 30px;
+            height: 30px;
+        }
+
+        #bgndshade {
+            z-index: 1;
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: rgba(0, 0, 0, .65);
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .topbar2 {
+            position: relative;
+            left: 0px;
+            display: flex;
+            justify-content: right;
+            padding-left: 10px;
+            padding-right: 10px;
+            width: 100%;
+            border-radius: 10px;
+            padding-top: 10px;
+        }
+
+        .topbar2 img {
+            width: 30px;
+            height: 30px;
+        }
+
+        .pleaseShare * {
+            margin: 0;
+        }
+
+        .pleaseShare h2 {
+            margin-bottom: 10px;
+        }
+
+        .pleaseShare p {
+            color: #6f6f6f;
+        }
+
+        .rows {
+            display: flex;
+            text-align: center;
+            align-items: center;
+            flex-direction: row;
+            justify-content: center;
+        }
+
+        .row {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .actionIcon {
+            width: 40px;
+            height: 40px;
+            border-radius: 40px;
+            background-color: lightblue;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="bgndshade">
+        <div class="container">
+            <div class="topbar2">
+                <img src="xout.png" />
+            </div>
+            <div class="pleaseShare">
+                <h2>Help by sharing</h2>
+                <p>Fundraisers shared on social networks raise up to 5x more. Share using your links below.</p>
+            </div>
+            <div class="rows">
+                <div class="row">
+                    <div class="actionIcon">
+                        <img src="copyicon.png">
+                    </div>
+                    <div class="actionIcon">
+                        <img src="emailicon.png">
+                    </div>
+                    <div class="actionIcon">
+                        <img src="facebookicon.svg">
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="actionIcon">
+                        <img src="instagramicon.png">
+                    </div>
+                    <div class="actionIcon">
+                        <img src="messenger-logo.webp">
+                    </div>
+
+                    <div class="actionIcon">
+                        <img src="xicon.svg" style="border-radius: 25%;">
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</body>

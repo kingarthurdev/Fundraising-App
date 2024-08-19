@@ -1,0 +1,580 @@
+::-webkit-scrollbar {
+  /*display: none;*/
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+
+
+:root {
+  --primary-color: rgb(41, 51, 92);
+  --secondary-color: rgb(93, 162, 113);
+  --highlight: #ffbf02;
+  overflow-x: hidden;
+}
+
+body {
+  padding: 0;
+  margin: 0;
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+.topbar {
+  display: flex;
+  -ms-flex-align: center;
+  flex-direction: row;
+  position: relative;
+  /*fixed;*/
+  top: 0;
+  width: 100vw;
+  background-color: white;
+  z-index: 11;
+  justify-content: space-between;
+  padding: 5px;
+  align-items: center;
+  max-width: 95%;
+  height: 60px;
+}
+
+
+.topButtonsContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  position: relative;
+}
+
+.topButton {
+  width: 100px;
+  height: 43px;
+  font-size: 18px;
+  border-radius: 7px;
+  margin-left: 5px;
+  border: none;
+  background-color: var(--highlight);
+  transform: translateX(-12px);
+}
+
+.bigdonate {
+  border-radius: 5px;
+  background-color: var(--highlight);
+  width: 90%;
+  height: 70px;
+  border: none;
+  margin-bottom: 20px;
+  font-size: 30px;
+}
+
+#logo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 40px;
+  /*margin-left: -30px;*/
+}
+
+#logoname {
+  margin-left: 10px;
+  display: flex;
+  flex-direction: row;
+}
+
+#logoname h2 {
+  margin-left: 10px;
+  position: relative;
+  transform: translateY(-20%);
+}
+
+#split {
+  padding-top: 20px;
+  position: relative;
+  width: 100%;
+  /*extra room for fade out*/
+  background-color: rgb(18, 11, 51);
+  /*rgb(215, 222, 250);*/
+  background-image: url("/blacker.png");
+}
+
+#actualSplit {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 95%;
+}
+
+#splitimg {
+  border-style: none;
+  max-width: 48rem;
+  border-radius: 15px;
+}
+
+
+.googlefont {
+  font-family: "Playfair Display", serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+.card {
+  min-width: 250px;
+  width: 29%;
+  height: 280px;
+  border-radius: 20px;
+  border-style: solid;
+  border-width: 1px;
+  background-color: white;
+  position: relative;
+  margin: 13px;
+}
+
+.shorterCard {
+  height: 187px !important;
+  margin-bottom: 36px;
+}
+
+.cardrow {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+  max-width: 1060px;
+}
+
+.ribbon {
+  font-size: 28px;
+  font-weight: bold;
+  color: #fff;
+  --d: .4em;
+  /* the depth */
+
+  position: relative;
+  top: 15px;
+  inset-inline: calc(-1*var(--d));
+  border-bottom: var(--d) solid #0008;
+  line-height: 1.8;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--d)), calc(100% - var(--d)) 100%, calc(100% - var(--d)) calc(100% - var(--d)), var(--d) calc(100% - var(--d)), var(--d) 100%, 0 calc(100% - var(--d)));
+  background-color: rgb(12, 6, 38);
+  width: calc(100% + 23px);
+  /* the main color */
+  border-radius: 10px;
+}
+
+.amountbutton {
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  height: 46px;
+  border-radius:.9rem;
+  position: absolute;
+  bottom: 10px;
+  /*This only works if parent is pos relative*/
+  background-color: var(--highlight);
+  color: black;
+}
+
+.buttonamount {
+  font-size: 1.2em;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+  font-weight: 560;
+}
+
+.amountmessage {
+  text-align: left;
+  padding: 20px;
+  font-size: 1.3em;
+}
+
+.amountmessage p {
+  font-size: 1rem;
+  margin-top: 5px;
+}
+
+.nomargin * {
+  margin: 0px;
+}
+
+#customdonationparent {
+  min-width: 269px;
+  background-color: white;
+  width: 44.5%;
+  padding: .9rem;
+  box-sizing: border-box;
+  border-radius: .9rem;
+  background-color: var(--highlight);
+}
+
+#customdonationparent div {
+  font-size: 1.2em;
+  font-weight: 560;
+}
+
+.donorcard {
+  max-width: 310;
+  min-height: 20px;
+  border-radius: 10px;
+  padding: 15px;
+  text-align: left;
+  border-style: solid;
+  border-width: 2px;
+  margin-bottom: 10px;
+  margin-top: 5px;
+  height: fit-content;
+  border-color: #f49a00;
+}
+
+.donorName {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.supportingDate {
+  font-size: 13px;
+  color: rgb(66, 66, 66);
+}
+
+.donorMessage {
+  padding-top: 10px;
+  font-size: 17px;
+  word-wrap: break-word;
+}
+
+.donorrow {
+  margin-bottom: 0px !important;
+  margin-top: 0px !important;
+  padding: 0px;
+}
+
+#loadmore {
+  margin: 15px;
+  padding: 15px 25px 15px 25px;
+  text-align: center;
+  font-size: 1em;
+  font-weight: 600;
+  border-radius: 5px;
+  border-width: 0px;
+  color: white;
+  background-color: var(--primary-color);
+}
+
+h1 {
+  font-size: 2.4em;
+}
+
+.footer {
+  width: 100%;
+  height: 80px;
+  background-color: var(--primary-color);
+  color: white;
+}
+
+
+.donorColumn {
+  margin: .9%;
+  display: flex;
+  flex-direction: column;
+}
+
+#columnParent {
+  width: 100%;
+  box-sizing: border-box;
+  /*SOOOOO IMPORTANT!*/
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.donateProgBox {
+  background-color: white;
+  border-radius: 20px;
+  padding: 30px;
+  width: 90%;
+}
+
+.aboutmessage {
+  /*
+  border-radius: 30px;
+  padding: 30px;
+  padding-top: 0px;
+  box-shadow: 0 0 5px grey;*/
+  font-size: 1.15rem;
+  font-weight: 500;
+}
+
+.aboutbox {
+  width: 80%;
+  margin-bottom: 50px;
+  text-align: left;
+  font-weight: 700;
+}
+
+.abouttitle {
+  font-size: 2.4em;
+  font-weight: bold !important;
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 500;
+  font-size: 1.7em;
+  padding-top: 20px;
+}
+
+.donateboxhousing {
+  background-color: rgb(215, 222, 250);
+  margin-top: 0px;
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+.splitImgParent {
+  width: 97.5vw !important;
+  margin-bottom: 20px;
+}
+
+.donateProgParent {
+  width: 100%;
+}
+
+.hidden {
+  display: none !important;
+}
+
+#logo img {
+  height: 120%;
+}
+#fundNameAboveBar{
+  font-size:1.75em;
+  margin-bottom:10px;
+}
+.bigdonate:hover{
+  background-color: #fbbc00;
+}
+.amounts h3{
+  font-size: .95em;
+}
+@media (max-width: 1350px) {
+  .progress1::-webkit-progress-value {
+    background: #04FD01;
+    background-image: url(/progressbarbackground.jpg);
+    background-repeat: no-repeat;
+    background-size: calc(100vw - 300px) 300px !important;
+  }
+
+  /*
+  .splitImgParent {
+    display: none;
+  }*/
+  #actualSplit {
+    flex-direction: column;
+  }
+
+  .splitImgParent,
+  .donateProgParent {
+    width: 100%;
+  }
+
+  .splitImgParent img {
+    height: auto;
+  }
+
+  .donateProgBox {
+    max-width: 48rem;
+  }
+
+  #split {
+    padding-bottom:30px;
+  }
+
+  .donateProgBox>* {
+    width: 100%;
+  }
+
+  .donateProgBox h1 {
+    font-size: 2.3em;
+  }
+
+  .topbar {
+    max-width: 49rem !important;
+  }
+}
+
+.topbarWrapper {
+  width: 100vw;
+  box-shadow: 0px 1.2px lightgrey;
+  height: 60px;
+  background-color: white;
+  display: flex;
+  justify-content: center;
+}
+
+#thanks{
+  margin-bottom:0;
+}
+#splitImgParent{
+  display: flex;
+  align-items: center;
+}
+@media (max-width: 990px) {
+  .progress1::-webkit-progress-value {
+    background: #04FD01;
+    background-image: url(/progressbarbackground.jpg);
+    background-repeat: no-repeat;
+    background-size: calc(80vw) 300px !important;
+  }
+
+  .topbar {
+    min-height: 3.5rem;
+  }
+
+  #columnParent{
+    flex-direction: column;
+    align-items: center;
+  }
+  .donorColumn{
+    margin:0px;
+    width:80%;
+    display: flex;
+    align-items: center;
+  }
+  .donorcard{
+    max-width:1000px;
+    width: 100%;
+  }
+  #thanks{
+    margin-bottom:1rem;
+  }
+  #splitimg{
+    width:100%;
+    margin-top: -10px;
+    margin-left:0px;
+  }
+
+  .topButtonsContainer{
+    padding-right:5px;
+  }
+  .cardrow{
+    flex-direction: column;
+    align-items: center;
+    width:80%;
+  }
+  .card{
+    width:100%;
+    height: 250px;
+    margin-top:7px !important;
+    margin-bottom:10px !important;
+  }
+  .shorterCard{
+    height: 157px !important;
+  }
+  .donateProgBox{
+    width:100%;
+    padding:10px;
+    padding-top: 30px;
+  }
+  #split {
+    height: auto;
+    padding-bottom: 20px;
+  }
+
+  /*
+  .donateProgParent {
+    display: none;
+  }
+
+  .splitImgParent {
+    padding: 20px;
+    width: 100%;
+    min-width: 350px !important;
+    padding-left: 7px;
+    padding-right: 7px;
+  }
+
+  #split {
+    height: auto !important;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 0px;
+  }
+*/
+
+  /*
+  .donateprogbox {
+    height: 650px;
+    transform: translateY(13px);
+    width: 88%;
+    max-width: 1000px
+  }
+
+  .donateprogbox h1 {
+    font-size: 5em !important;
+  }
+
+  .donateprogbox h3 {
+    font-size: 2em;
+  }
+
+  .amounts {
+    width: 95%;
+    font-size: 1.2em;
+  }
+
+  #split {
+    height: 750px;
+  }
+
+  .bigdonate {
+    height: 90px;
+    width: 95%;
+  }
+
+  .bigdonate * {
+    font-size: 1.3em;
+  }*/
+
+}
+@media (max-width: 550px) {
+  .card{
+    height: 280px;
+  }
+  .shorterCard{
+    height:177px !important;
+  }
+}
+.amounts {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 89%;
+}
+
+.progress {
+  width: 90%;
+  text-align: left;
+  -webkit-appearance: none;
+  appearance: none;
+  border: none;
+  border-radius: 10px;
+  height: 40px;
+}
+
+.progress::-webkit-progress-bar {
+  background-color: lightgrey;
+  box-shadow: inset 0 0 4px grey;
+}
+
+.progress::-webkit-progress-bar,
+.progress::-webkit-progress-value {
+  border-radius: 20px;
+}
+
+
+.progress1::-webkit-progress-value {
+  background: #04FD01;
+  background-image: url(/progressbarbackground.jpg);
+  background-repeat: no-repeat;
+  background-size: calc(100vw / 2 - 140px) 300px;
+}

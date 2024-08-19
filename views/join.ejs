@@ -1,0 +1,108 @@
+<html>
+
+<head>
+    <title>
+        Join a Fundraiser
+    </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+        rel="stylesheet">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            --font-sans-serif: 'Inter';
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgb(239, 243, 255);
+        }
+
+        h1 {
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-bottom: 0px;
+        }
+
+        p {
+            margin-top: 5px;
+            color: rgb(99, 99, 99);
+            font-size: .875rem;
+            margin-bottom:20px;
+        }
+
+        input {
+            width:100%;
+            padding:10px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .main {
+            max-width: 28em;
+            width:100%;
+            padding:25px;
+            border-radius: 10px;
+            outline: solid 1px;
+            background-color: white;
+        }
+        #sub{
+            border-radius: 7px;
+            background-color: #ffbf02;
+            border-color: #ffbf02;
+        }
+        #wrong{
+            color:red;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main">
+        <center>
+            <h1>Join a Fundraiser</h1>
+            <p>Enter a fundraiser ID to join their campaign.</p>
+            <form id="form">
+                <input id="id" type="text" placeholder="Enter fundraiser ID">
+                <p id="wrong">Invalid Campaign ID. Please try again.</p>
+                <input type="submit" id="sub">
+            </form>
+        </center>
+    </div>
+    <script>
+        form.addEventListener('submit', myFunction);
+        function myFunction(event) {
+            event.preventDefault(); // this is so important to prevent that annoying refresh each time -- this also only seems to work with event listener and not on submit...
+            var id = document.getElementById("id").value;
+            let data = { "campaignId": id, "id":<%= id %>};
+        const response = fetch("/joinCampaign", {
+            method: "POST", // *GET, POST, PUT, DELETE, etc.
+            mode: "cors", // no-cors, *cors, same-origin
+            cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: "same-origin", // include, *same-origin, omit
+            headers: {
+                "Content-Type": "application/json",
+                // 'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            redirect: "follow", // manual, *follow, error
+            referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+            body: JSON.stringify(data), // body data type must match "Content-Type" header
+        }).then(r => {
+            if (r.status == 200) {
+                window.location = "/dashboard";
+            } else {
+                console.log("asdf")
+                document.getElementById("wrong").style = "display:block !important;";
+            }
+        });
+    }
+    </script>
+
+
+
+</body>
+
+</html>

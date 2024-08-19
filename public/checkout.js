@@ -1,8 +1,6 @@
 //CHANGE THIS PUBLIC KEY TO THE REAL KEY ON DEPLOYMENT
 const stripe = new Stripe("pk_test_51K668CBZCoGd2paD7MnHjpsXEJbq7wNTrySTJqg6yt0nZlaZ0rX3pvp9HZ4NYGQx6af6aF5h1rdZqk221p6gFgNg00NdPRRidt");
 
-// The items the customer wants to buy --> need to change
-//const items = [{ id: "xl-tshirt" }];
 const url = new URLSearchParams(window.location.search)
 
 const formatter = new Intl.NumberFormat('en-US', {
@@ -10,11 +8,13 @@ const formatter = new Intl.NumberFormat('en-US', {
   currency: 'USD',
 });
 
+
+
 //default donation amounts
-let donationAmount = 100;
-let processing = .04;
-let tip = .15;
-let tipdollars =0;
+let donationAmount = 100; //$100
+let processing = .04; //4%
+let tip = .15;  //15% tip
+let tipdollars =0; // if user chooses other, tip =0, tipdollars becomes the amount they put into the other field. 
 let totalamt; 
 document.querySelector("#amount2").style.display = "none"; // hide by default
 
@@ -42,7 +42,8 @@ updateDonation();
 
 //may want to add more stuff later, but good nuff for now 
 function updateDonation(e) {
-  console.log(e)
+
+  // if called based on event listener and not as child of another function.
   if (e) {
     if (e.target.value.length > 6) {
       e.target.value = e.target.value.slice(0, 6); // Restricting to 6 digits
@@ -52,14 +53,18 @@ function updateDonation(e) {
       donationAmount = e.target.value;
     }
   }
+
+  if(tip != 0){
+    tipdollars =0;
+  }
+  //tip dollars is 0 unless manual input
+  tipamt = parseFloat(donationAmount * tip) + parseFloat(tipdollars);
+  //donation before cc processing fee, tip amt percent based, tip dollars is from manual input. 
+  let rawAmount = parseFloat(donationAmount) + parseFloat(tipamt) + parseFloat(tipdollars);  // mult parseFloart because stuff not casted properly
+  let fee = parseFloat(rawAmount * processing); // the amount for cc processing
   
-  let tipamt = parseFloat(donationAmount * tip);
-  let fee = parseFloat(donationAmount * processing);
-  if(tipdollars){
-    totalamt = formatter.format(parseFloat(donationAmount) + tipamt + fee + parseFloat(tipdollars));
-  }else{
-    totalamt = formatter.format(parseFloat(donationAmount) + tipamt + fee);
-  } 
+  totalamt = formatter.format(parseFloat(fee + rawAmount));
+
 
   document.getElementById("donationAmount").innerHTML = formatter.format(donationAmount);
   document.getElementById("totalamt").innerHTML = totalamt;
@@ -86,10 +91,13 @@ function updateTipAmount(e){
       e.target.value = e.target.value.slice(0, 6); // Restricting to 6 digits
     }
     tipdollars = Math.abs(e.target.value);
+    e.target.value = Math.abs(e.target.value);
+
+    console.log("manual tip inserted. Calling update donation.");
     updateDonation();
-    
   }
 }
+
 function updateTipPercent(percent){
   tip = percent/100;
   if(percent ==0){
@@ -162,14 +170,23 @@ async function initialize() {
   paymentElement.mount("#payment-element");
 }
 
+
+//TODO: this does not currently work, this is not whree i'm supposed to add the transfer destination thingy, i should add it in the script.js file in the create new payment form thingy
 async function handleSubmit(e) {
-  let donationAmount = parseFloat(totalamt.substring(1));
+  let totaldonation = totalamt.replaceAll(",","").replace("$","");
+  let totaltip = donationAmount * tip + tipdollars;
+
+
   e.preventDefault();
   setLoading(true);
+
+  let custName = document.querySelector("#name").value;
+  let custEmail = document.querySelector("#email").value;
+  
   const updatedIntent = await fetch("/update-payment-intent", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ donationAmount, PI: globalPaymentIntent }),   //NOTE THIS IS NOT THE ORIGIONAL VAR DONATION AMOUNT, IT'S ACTUALLY TOTAL AMOUNT 
+    body: JSON.stringify({ totaldonation, PI: globalPaymentIntent, totaltip, custName, custEmail}),   //NOTE THIS IS NOT THE ORIGIONAL VAR DONATION AMOUNT, IT'S ACTUALLY TOTAL AMOUNT 
   });
 
   //currently only way to implement this... 

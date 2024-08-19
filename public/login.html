@@ -1,0 +1,178 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+
+    <style>
+        :root {
+            --primary-color: rgb(41, 51, 92);
+            --secondary-color: rgb(93, 162, 113);
+            --highlight: #ffbf02;
+            overflow-x: hidden;
+            font-family: Matter, sans-serif;
+
+        }
+
+        #wrong {
+            color: red;
+            padding: 0;
+            margin-bottom: 10px;
+            margin-top: -10px;
+        }
+
+        .formelement {
+            width: 100%;
+            height: 50px;
+            border-radius: 6px;
+            font-size: medium;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 1px solid  grey;
+        }
+
+        #login {
+            width: 100%;
+            height: 50px;
+            border-radius: 5px;
+            background-color: #2563EB;
+            font-size: 20px;
+            margin-bottom:20px;
+            color:white;
+            border-style:none;
+        }
+        #loginparent{
+            max-width: 400px;
+            width:80%;
+            background-color: white;
+            padding:30px;
+            border-radius:5px;
+            position:relative;
+            margin-top:60px;
+            box-shadow: 15px 15px rgba(0, 0, 146, 0.2);
+            padding-bottom:70px;
+        }
+        body{
+            /*background-image: url("/blendofcolors.png");
+            background-repeat: no-repeat;
+            background-attachment: fixed; 
+            background-size: 100% 100%;*/
+            background-color: rgb(226, 228, 252);
+            margin:0px;
+        }
+        .topbar {
+            display:flex;
+            -ms-flex-align: center;
+            flex-direction: row;
+            position: fixed;
+            top: 0;
+            width: 100vw;
+            height: 60px;
+            background-color: white;
+            z-index: 11;
+            justify-content: space-between;
+            box-shadow: 0px 1.2px grey;
+        }
+        #logo{
+            width:50px;
+            height:50px;
+        }
+
+        #logoname{
+            margin-left:10px;
+            display:flex;
+            flex-direction:row;
+        }
+
+        #logoname h2{
+            margin-left:10px;
+            position:relative;
+            transform: translateY(-20%);
+        }
+        .vertcenter{
+            position: relative;
+            top:50%;
+            transform:translateY(calc(-50% - 60px));
+        }
+    </style>
+</head>
+
+<body>
+    <div class="topbar">
+        <div id="logoname">
+            <img id="logo" src="/logo2.png">
+            <h2>Royal Fundraising</h2>
+        </div>
+        
+
+    </div>
+    <center class="vertcenter">
+        <div id="loginparent">
+            <h1 style="margin-bottom: -10px;">Welcome back!</h1>
+            <p>Don't have an account yet? <strong><a href="/signup.html" style="color:black;">Register</a></strong></p>
+            <form onsubmit="return false;">
+                <input required type="text" class="formelement" id="email" autocomplete = "email" placeholder="Enter your email"><br>
+                <input required type="password" autocomplete="current-password" class="formelement" id="pass" placeholder="Enter your password"><br><br>
+                <p required id="wrong" style="display:none;">Your password or email is incorrect. Please try again.</p>
+                <input type="submit" id="login" value="Log In">
+            </form>
+            <a href="/" style = "color: black;">Forgot your password?</a>
+        </div>
+    </center>
+    <script>
+        // check if logged in already
+        fetch("/api/auth", {
+            method: "POST", // *GET, POST, PUT, DELETE, etc.
+            mode: "cors", // no-cors, *cors, same-origin
+            cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: "same-origin", // include, *same-origin, omit
+            headers: {
+                "Content-Type": "application/json",
+            },
+            redirect: "follow",
+        }).then(r => {
+            if (r.status == 200) {
+                window.location = "/dashboard";
+            }
+        });
+
+
+        document.getElementById("login").addEventListener("click", function () {
+            console.log(document.getElementById("email").value);
+            console.log(document.getElementById("pass").value);
+
+            let data = { "email": document.getElementById("email").value, "password": document.getElementById("pass").value };
+
+            const response = fetch("/api/auth", {
+                method: "POST", // *GET, POST, PUT, DELETE, etc.
+                mode: "cors", // no-cors, *cors, same-origin
+                cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+                credentials: "same-origin", // include, *same-origin, omit
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                redirect: "follow", // manual, *follow, error
+                referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+                body: JSON.stringify(data), // body data type must match "Content-Type" header
+            }).then(r => {
+                if (r.status == 200) {
+                    window.location = "/dashboard";
+                } else {
+                    document.getElementById("wrong").style = "display:block;";
+                }
+            }).catch(err => {
+                document.getElementById("wrong").style = "display:block;";
+            });
+
+
+        });
+    </script>
+
+
+
+
+
+
+
+</body>
+
+</html>
