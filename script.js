@@ -11,7 +11,7 @@ todo: make sure that only the $ that should go to the fundraiser is recorded, mi
 
 require('dotenv').config();
 const bcrypt = require('bcrypt'); //for user pass encryption
-const port = 8000;
+const port = 80;
 const express = require('express')
 const mysql = require('mysql')
 const app = express();
