@@ -14,8 +14,9 @@ const formatter = new Intl.NumberFormat('en-US', {
 let donationAmount = 100; //$100
 let processing = .04; //4%
 let tip = .15;  //15% tip
-let tipdollars =0; // if user chooses other, tip =0, tipdollars becomes the amount they put into the other field. 
-let totalamt; 
+let tipdollars = 0; // if user chooses other, tip =0, tipdollars becomes the amount they put into the other field. 
+let totalamt;
+let newcust = true;
 document.querySelector("#amount2").style.display = "none"; // hide by default
 
 
@@ -43,26 +44,29 @@ updateDonation();
 //may want to add more stuff later, but good nuff for now 
 function updateDonation(e) {
 
-  // if called based on event listener and not as child of another function.
-  if (e) {
-    if (e.target.value.length > 6) {
-      e.target.value = e.target.value.slice(0, 6); // Restricting to 6 digits
-    } else if (e.target.value.length == 0) {
-      donationAmount = 0;
-    } else {
-      donationAmount = e.target.value;
+  try {
+    if (e) {
+      if (e.target.value.length > 6) {
+        e.target.value = e.target.value.slice(0, 6); // Restricting to 6 digits
+      } else if (e.target.value.length == 0) {
+        donationAmount = 0;
+      } else {
+        donationAmount = e.target.value;
+      }
     }
+  } catch {
+    console.log("error in updating amounts, trying to fail gracefully");
   }
 
-  if(tip != 0){
-    tipdollars =0;
+  if (tip != 0) {
+    tipdollars = 0;
   }
   //tip dollars is 0 unless manual input
   tipamt = parseFloat(donationAmount * tip) + parseFloat(tipdollars);
   //donation before cc processing fee, tip amt percent based, tip dollars is from manual input. 
   let rawAmount = parseFloat(donationAmount) + parseFloat(tipamt) + parseFloat(tipdollars);  // mult parseFloart because stuff not casted properly
   let fee = parseFloat(rawAmount * processing); // the amount for cc processing
-  
+
   totalamt = formatter.format(parseFloat(fee + rawAmount));
 
 
@@ -76,6 +80,9 @@ function updateDonation(e) {
     document.getElementById("totalamt").innerHTML = formatter.format(parseFloat(donationAmount) + tipamt + fee);
   }*/
 
+  // if called based on event listener and not as child of another function.
+
+
   try {
     document.getElementById("feeamt").innerHTML = formatter.format(fee);
     document.getElementById("tipamt").innerHTML = formatter.format(tipamt);
@@ -84,7 +91,7 @@ function updateDonation(e) {
   }
 }
 
-function updateTipAmount(e){
+function updateTipAmount(e) {
   console.log(e.target.value);
   if (e) {
     if (e.target.value.length > 6) {
@@ -98,30 +105,30 @@ function updateTipAmount(e){
   }
 }
 
-function updateTipPercent(percent){
-  tip = percent/100;
-  if(percent ==0){
+function updateTipPercent(percent) {
+  tip = percent / 100;
+  if (percent == 0) {
     document.querySelector("#amount2").style.display = "block";
-  }else{
+  } else {
     document.querySelector("#amount2").style.display = "none";
   }
-  
+
   updateDonation();
 }
 
-function updateCoverFees(){
-  if(!document.querySelector("#covercardfees").checked){
-    processing=0;
-  }else{
-    processing=.04;
+function updateCoverFees() {
+  if (!document.querySelector("#covercardfees").checked) {
+    processing = 0;
+  } else {
+    processing = .04;
   }
   updateDonation();
 }
 
-function toggleAboutProcessing(){
-  if(document.getElementById("aboutprocessing").style.display == "none"){
-      document.getElementById("aboutprocessing").style.display = "block";
-  }else{
+function toggleAboutProcessing() {
+  if (document.getElementById("aboutprocessing").style.display == "none") {
+    document.getElementById("aboutprocessing").style.display = "block";
+  } else {
     document.getElementById("aboutprocessing").style.display = "none"
   }
 
@@ -135,7 +142,7 @@ document
   .addEventListener("submit", handleSubmit);
 
 document.querySelector("#submit").addEventListener("click", clickrealbtn);
-function clickrealbtn(){
+function clickrealbtn() {
   console.log("clicky");
   document.querySelector("#hiddensubmit").click();
 }
@@ -173,7 +180,7 @@ async function initialize() {
 
 //TODO: this does not currently work, this is not whree i'm supposed to add the transfer destination thingy, i should add it in the script.js file in the create new payment form thingy
 async function handleSubmit(e) {
-  let totaldonation = totalamt.replaceAll(",","").replace("$","");
+  let totaldonation = totalamt.replaceAll(",", "").replace("$", "");
   let totaltip = donationAmount * tip + tipdollars;
 
 
@@ -182,11 +189,11 @@ async function handleSubmit(e) {
 
   let custName = document.querySelector("#name").value;
   let custEmail = document.querySelector("#email").value;
-  
+
   const updatedIntent = await fetch("/update-payment-intent", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ totaldonation, PI: globalPaymentIntent, totaltip, custName, custEmail}),   //NOTE THIS IS NOT THE ORIGIONAL VAR DONATION AMOUNT, IT'S ACTUALLY TOTAL AMOUNT 
+    body: JSON.stringify({ totaldonation, PI: globalPaymentIntent, totaltip, custName, custEmail }),   //NOTE THIS IS NOT THE ORIGIONAL VAR DONATION AMOUNT, IT'S ACTUALLY TOTAL AMOUNT 
   });
 
   //currently only way to implement this... 
@@ -195,7 +202,7 @@ async function handleSubmit(e) {
     elements,
     confirmParams: {
       // Make sure to change this to your payment completion page
-      return_url: "http://localhost:8000/checkout/1", //"https://www.youtube.com/watch?v=PRu27S0isWY",
+      return_url: "http://localhost:8000/checkout/2", //"https://www.youtube.com/watch?v=PRu27S0isWY",
     },
     redirect: 'if_required',
   });
@@ -206,11 +213,15 @@ async function handleSubmit(e) {
     body: JSON.stringify({ donationAmount, id: globalPaymentIntent, fundId: globalFundId }),
   });
 
+
+  
   //this line of code is a bit repetitive, but ah well. to make better, grab status from backend. 
   const { paymentIntent } = await stripe.retrievePaymentIntent(globalClientSecret);
   switch (paymentIntent.status) {
     case "succeeded":
-      showMessage("Payment succeeded!");
+      //showMessage("Payment succeeded!", 1);
+      
+      window.location.href = "/thankyou?id="+globalPaymentIntent+"&sourceId="+globalFundId;
       break;
     case "processing":
       showMessage("Your payment is processing.");
@@ -284,9 +295,13 @@ async function checkStatus() {
 
 // ------- UI helpers -------
 
-function showMessage(messageText) {
+function showMessage(messageText, green) {
   const messageContainer = document.querySelector("#payment-message");
-
+  if (green == 1) {
+    messageContainer.style.color = "green";
+  } else {
+    messageContainer.style.color = "red";
+  }
   messageContainer.classList.remove("hidden");
   messageContainer.textContent = messageText;
 

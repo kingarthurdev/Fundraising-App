@@ -44,7 +44,7 @@
             <form id="payment-form">
                 <label for="amount" class="label"><strong>Donation Amount (USD)</strong></label>
                 <span style="display:inline;">
-                    <input id="amount" class="extraforms" pattern="[0-9]*" placeholder="$100" type="number" value="100"
+                    <input id="amount" class="extraforms" maxlength="6" inputmode="numeric" pattern="[0-9]*" placeholder="$100" type="number" value="100"
                         required />
                 </span>
 
@@ -82,11 +82,11 @@
                     <div id="donationAmount">$100.00</div>
                 </div>
                 <div class="item littleitem">
-                    <div>Card Processing Fee:</div>
+                    <div>Card Processing Fee (optional):</div>
                     <div id="feeamt">$4.00</div>
                 </div>
                 <div class="item littleitem">
-                    <div>Tip:</div>
+                    <div>Tip (optional):</div>
                     <div id="tipamt">$15.00</div>
                 </div>
                 <div style="width:100%;height:.7px;background: #bfbfbf;position:relative;left:-8px; margin-top:10px; margin-bottom:10px;" ></div>

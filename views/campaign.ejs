@@ -26,7 +26,7 @@
                 </h2>
             </div>
             <div id="logo">
-                <img src="/bowiebpa.jpg" alt="Bowie BPA Logo">
+                <img src="<%=camImage%>" alt="Logo">
             </div>
 
             <div class="topButtonsContainer">
@@ -52,7 +52,7 @@
 
 
                     <div class="splitImgParent">
-                        <img id="splitimg" src="/bpaplaceholder.jpeg">
+                        <img id="splitimg" src="<%= mainCamImage%>">
                     </div>
                     <div class="donateProgParent">
                         <div class="donateProgBox">
@@ -85,24 +85,7 @@
             <div class="aboutmessage">
                 <p class="abouttitle">About our Fundraiser</p>
                 </strong></p>
-                <p><!--Although raising funds for our program in incredibly difficult, it is vital for our success. Your
-                    donations will help purchase new equipment, reduce member costs, and ensure that all members have
-                    amazing new opportunities. Each donation, regardless of size, is crucial how we create a supportive
-                    environment for success and growth. Your support goes beyond just funding a program; it's about
-                    building a foundation for achievement and new opportunities.-->
-                    Business Professionals of America (BPA) is a leading organization dedicated to preparing students
-                    for careers in business, management, IT, and related fields. With programs including competitive
-                    events, leadership conferences, and professional development, BPA empowers students to develop
-                    essential skills and achieve their career goals.
-                </p>
-                <p>
-                    Your donation to BPA empowers our students to become future business leaders by expanding
-                    educational opportunities, enhancing programs, and building a stronger workforce. Support us in
-                    providing resources and experiences that prepare students for success and drive positive change in
-                    their communities.
-                </p>
-                <p>Please help raise additional awareness of our fundraiser by sharing it with friends and family
-                    through text, email, and social media.</p>
+                <%- message %>    <!--NOTE: THIS IS NOW NOT ESCAPED!! VULN TO XSS IF BAD STUFF INJECTED!-->               
                 <span class="nomargin">
                     <p>Thank You,</p>
 
@@ -193,7 +176,7 @@
                     </a>
                 </div>
             </div>
-            <a href="/checkout/<%=fundId %>/?donate=25" style="color:black; text-decoration: none;">
+            <a href="/checkout/<%=fundId %>/?donate=100" style="color:black; text-decoration: none;">
                 <div id="customdonationparent">
                     <div>Donate a Custom Amount</div>
                 </div>

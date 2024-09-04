@@ -84,7 +84,10 @@ app.get('/fund/:id', async (req, res) => {
       let camFunds = await outcome[0]?.camFunds;
       let dollarGoal = await outcome[0]?.dollarGoal;
       let programLeader = await outcome[0]?.programLeader;
-      res.render('campaign', { fundName, fundId, camFunds, dollarGoal, programLeader });
+      let message = await outcome[0]?.camDescription;
+      let camImage = await outcome[0]?.camImage;
+      let mainCamImage = await outcome[0]?.mainCamImage; 
+      res.render('campaign', { fundName, fundId, camFunds, dollarGoal, programLeader, message, camImage, mainCamImage });
     } catch (err) {
       console.log(err);
       return res.status(500).send('Error fetching data from database');
@@ -181,18 +184,24 @@ app.post("/create-payment-intent", async (req, res) => {
 //updates amount to be paid when the person submits the form 
 app.post("/update-payment-intent", async (req, res) => {
 
+  let customer;
   let name = req.body.custName + "";
   let email = req.body.custEmail + "";
   try {
-    const customer = await stripe.customers.create({
-      name: name,
-      email: email,
-    });
-    console.log("New customer, here is the name and email: " + req.body.custName + " : " + req.body.custEmail);
+    try {
+      customer = await stripe.customers.create({
+        name: name,
+        email: email,
+      });
+      console.log("New customer, here is the name and email: " + req.body.custName + " : " + req.body.custEmail);
+    } catch {
+      console.log("Customer creation failed. Possibly because they already exist. Ignoring for now...")
+    }
+
 
     let cleanDonation = mysql.escape(req.body.totaldonation);
     cleanDonation = cleanDonation.replace(/^'|'$/g, "").replaceAll(",", "");
-    cleanDonation = parseFloat(cleanDonation) * 100;
+    cleanDonation = parseInt(parseFloat(cleanDonation) * 100);
 
 
 
@@ -201,23 +210,44 @@ app.post("/update-payment-intent", async (req, res) => {
     }
     let totalint = cleanDonation;
 
-    let paymentIntent = await stripe.paymentIntents.update(
-      req.body.PI,
-      {
-        amount: totalint,
-        application_fee_amount: 1000,
-        customer: customer.id,
-      }
-    );
-    // duplicate stuff incase of errors? 
-    paymentIntent = await stripe.paymentIntents.update(
-      req.body.PI,
-      {
-        amount: totalint,
-        application_fee_amount: parseInt(req.body.totaltip * 100),
-        customer: customer.id,
-      }
-    );
+    if (customer) {
+      let paymentIntent = await stripe.paymentIntents.update(
+        req.body.PI,
+        {
+          amount: totalint,
+          application_fee_amount: 1000,
+          customer: customer.id,
+        }
+      );
+      // duplicate stuff incase of errors? // honestly idk what the point of this is, but past me put it here... 
+      paymentIntent = await stripe.paymentIntents.update(
+        req.body.PI,
+        {
+          amount: totalint,
+          application_fee_amount: parseInt(req.body.totaltip * 100),
+          customer: customer.id,
+        }
+      );
+    } else {
+      let paymentIntent = await stripe.paymentIntents.update(
+        req.body.PI,
+        {
+          amount: totalint,
+          application_fee_amount: 1000,
+        }
+      );
+      // duplicate stuff incase of errors? // honestly idk what the point of this is, but past me put it here... 
+      paymentIntent = await stripe.paymentIntents.update(
+        req.body.PI,
+        {
+          amount: totalint,
+          application_fee_amount: parseInt(req.body.totaltip * 100),
+        }
+      );
+    }
+
+
+
     console.log("Payment submitted, original payment updated")
     //console.log(paymentIntent, " is the updated payment intent")
     res.sendStatus(200);
@@ -710,7 +740,7 @@ app.post("/joinCampaign", async (req, res) => {
         return res.redirect("/login");
       }
     } catch (error) {
-      console.log(error +" was the error, redirecting to login.");
+      console.log(error + " was the error, redirecting to login.");
       return res.redirect("/login")
     }
   } else {
@@ -744,57 +774,61 @@ update transactions set succeeded = 1, date = ${date} where paymentid =
 //todo: verify that the person donated the amount that they are claiming to have. 
 app.post("/api/submitComment", async (req, res) => {
   try {
-    let paymentId = connection.escape(req.body.paymentId);
-    const d = new Date();
-    /*let date = d.getTime();
-    //date = ${connection.escape(date)},
-    */
-    let name = req.body.name; // give user option to leave anon, will put in "Anonymous"
-    let comment = req.body.comment;
-    if (comment.length > 250) {
-      console.log("Comment way too long. todo: prevent by send 400")
+    console.log(req.body.paymentId);
+    const paymentId = connection.escape(req.body.paymentId);
+    console.log(paymentId);
+
+    const paymentIntent = await stripe.paymentIntents.retrieve(req.body.paymentId);
+    
+    if (paymentIntent.status !== 'succeeded') {
+      console.log(paymentIntent.status);
+      return res.sendStatus(400);
+
     }
+
+    // Check comment length
+    let name = req.body.name || "Anonymous";
+    let comment = req.body.message;
+    console.log("Original comment"+ comment);
+    /*if (comment.length > 250) {
+      console.log("Comment too long. Should return 400.");
+      return res.sendStatus(400); // Return 400 if comment is too long
+    }*/
+    
+    // Escape HTML to prevent XSS
     comment = escapeHtml(comment);
     name = escapeHtml(name);
+    console.log("cleaned? comment"+ comment);
 
+    // Construct SQL query
     const query = `
-    UPDATE transactions 
-    SET 
+      UPDATE transactions 
+      SET 
         comment = ${connection.escape(comment)},
         commentName = ${connection.escape(name)}
-    WHERE 
-        paymentid = ${paymentId}
-    ;`;
+      WHERE 
+        paymentid = ${paymentId};
+    `;
 
-    try {
-      stripe.paymentIntents.retrieve(req.body.paymentId).then(paymentIntent => {
+    // Execute SQL query
+    connection.query(query, (error, result) => {
+      if (error) {
+        console.error("Error executing query:", error);
+        return res.sendStatus(500);
+      }
 
-        if (paymentIntent.status === 'succeeded') {
-          connection.query(query, (error, response) => {
-            if (error) {
-              return res.sendStatus(400);
-            } else {
-              return res.sendStatus(200);
-            }
-          });
-        } else {
-          return res.sendStatus(400);
-        }
+      console.log("Comment updated successfully:", result);
+      return res.sendStatus(200);
+    });
 
-
-      });
-    } catch {
-      console.log("Failed to retrieve stripe ID");
-      return res.sendStatus(500);
-    }
-
-  } catch {
-    return res.sendStatus(401);
+  } catch (error) {
+    console.error("Error handling request:", error);
+    return res.sendStatus(500);
   }
-
 });
 
 function escapeHtml(unsafe) {
+  unsafe = unsafe+"";
   return unsafe
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")

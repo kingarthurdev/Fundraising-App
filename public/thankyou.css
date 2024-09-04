@@ -1,0 +1,90 @@
+body * {
+    font-family: 'Inter', sans-serif;
+    box-sizing: content-box;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+
+}
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+button,
+input,
+textarea {
+    width: 100% !important;
+    max-height: 300px !important;
+    margin-top: 10px;
+    min-height: 40px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 8px;
+    padding-right: 8px;
+    border-radius: calc(.5rem - 2px);
+    border-width: 1px;
+    border-color: rgb(193, 193, 193);
+    border-style: solid;
+    font-size: 1rem;
+}
+
+#centralBody {
+    max-width: 500px;
+}
+
+center {
+    position: relative;
+    top: 50%;
+    transform: translateY(calc(-50% - 5rem) );
+    padding: 20px;
+    padding-top: 50px;
+    padding-bottom: 50px;
+}
+
+p {
+    color: rgb(99, 99, 99);
+    font-size: 1.1rem;
+}
+
+h1 {
+    margin-bottom: 0px;
+}
+
+button {
+    background-color: #ffbf02;
+    font-weight: 600;
+}
+
+.topbar {
+    display: flex;
+    align-items: center;
+    position: relative;
+    top: 0px;
+    width: 100vw;
+    background-color: rgb(12, 6, 38);
+    color: white;
+    z-index: 9999;
+}
+
+.topbar * {
+    display: inline;
+}
+
+#logo img {
+    height: 3rem;
+}
+
+#logo {
+    padding-left: 20px;
+}
+
+.topbar h2 {
+    padding: 0px;
+    font-size: 1.1rem;
+}
+
+#logoname {
+    padding: 15px 10px 15px 10px;
+}
