@@ -37,7 +37,7 @@ var defaultClient = SibApiV3Sdk.ApiClient.instance;
 
 // Configure API key authorization: api-key
 var apiKey = defaultClient.authentications['api-key'];
-apiKey.apiKey = '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';
+apiKey.apiKey = env.SENDINBLUEAPIKEY;
 var apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
 var sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail(); // SendSmtpEmail | Values to send a transactional email
 
