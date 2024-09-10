@@ -1,5 +1,5 @@
 body * {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', Matter,  sans-serif;
     box-sizing: content-box;
     -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
     -moz-box-sizing: border-box;    /* Firefox, other Gecko */

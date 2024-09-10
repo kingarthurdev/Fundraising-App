@@ -3,7 +3,6 @@ const myParam = urlParams.get('id');
 const sourceId = urlParams.get('sourceId');
 
 
-alert("todo: make it so that this pg redirects to a share page instead of orig fund");
 document.querySelector("#submit").addEventListener("click", handleSubmit);
 
 async function handleSubmit() {
@@ -31,7 +30,7 @@ async function handleSubmit() {
         if (!response.ok) {
           throw new Error("Network response was not ok " + response.statusText);
         }else{
-            window.location.href = "/fund/"+sourceId;
+            window.location.href = "/fund/"+sourceId+"?share=true";
         }
         return response.json();  // Parse the JSON response
       })

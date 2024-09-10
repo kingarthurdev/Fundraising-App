@@ -17,6 +17,7 @@ let tip = .15;  //15% tip
 let tipdollars = 0; // if user chooses other, tip =0, tipdollars becomes the amount they put into the other field. 
 let totalamt;
 let newcust = true;
+let globalFee;
 document.querySelector("#amount2").style.display = "none"; // hide by default
 
 
@@ -66,6 +67,7 @@ function updateDonation(e) {
   //donation before cc processing fee, tip amt percent based, tip dollars is from manual input. 
   let rawAmount = parseFloat(donationAmount) + parseFloat(tipamt) + parseFloat(tipdollars);  // mult parseFloart because stuff not casted properly
   let fee = parseFloat(rawAmount * processing); // the amount for cc processing
+  globalFee = fee;
 
   totalamt = formatter.format(parseFloat(fee + rawAmount));
 
@@ -210,7 +212,7 @@ async function handleSubmit(e) {
   const verified = await fetch("/verify-payment", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ donationAmount, id: globalPaymentIntent, fundId: globalFundId }),
+    body: JSON.stringify({ donationAmount, id: globalPaymentIntent, fundId: globalFundId, custName, custEmail, totaltip, globalFee}),
   });
 
 

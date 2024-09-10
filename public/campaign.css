@@ -6,7 +6,7 @@
 *::before,
 *::after {
   box-sizing: border-box;
-  font-family: 'Inter', Helvetica, Arial, sans-serif;
+  /*font-family: 'Inter', Helvetica, Arial, sans-serif;*/
 }
 
 

@@ -3,15 +3,26 @@
     <head>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link
-            href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
-            rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
+        rel="stylesheet">
         <link href="/campaign.css" rel="stylesheet">
         <link rel="icon" href="/bowiebpa.jpg" type="image/icon type">
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
     </head>
     <style>
+        body * {
+            font-family: 'Inter', Helvetica, sans-serif;
+            box-sizing: content-box;
+            -webkit-box-sizing: border-box;
+            /* Safari/Chrome, other WebKit */
+            -moz-box-sizing: border-box;
+            /* Firefox, other Gecko */
+            box-sizing: border-box;
+            /* Opera/IE 8+ */
+
+        }
+
         .container {
             padding-left: 20px;
             padding-right: 20px;
@@ -33,7 +44,8 @@
             margin-right: -5px;
         }
 
-        .actionIcon img {
+        .shareItem img,
+        svg {
             width: 30px;
             height: 30px;
         }
@@ -83,8 +95,9 @@
         .rows {
             display: flex;
             text-align: center;
-            align-items: center;
-            flex-direction: row;
+            align-items: row;
+            /*make column when screen is too small*/
+            flex-direction: column;
             justify-content: center;
         }
 
@@ -93,12 +106,50 @@
             flex-direction: column;
         }
 
+        .shareItem {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .shareItem h3 {
+            line-height: 1.375rem;
+            font-size: 1rem;
+            margin: 0px;
+            font-style: normal;
+            font-weight: 600;
+            color:#252525;
+        }
+
+        .shareItem>h3 {
+            margin-left: 10px;
+        }
+
+        .shareItem p {
+            color: rgb(99, 99, 99);
+            font-size: .875rem;
+        }
+
+        #copyLink {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-left: 10px;
+        }
+
+        #copyLink * {
+            margin: 0px;
+            margin-top: 2px;
+        }
+
+        /*
         .actionIcon {
             width: 40px;
             height: 40px;
             border-radius: 40px;
             background-color: lightblue;
-        }
+        }*/
     </style>
 </head>
 
@@ -114,28 +165,50 @@
             </div>
             <div class="rows">
                 <div class="row">
-                    <div class="actionIcon">
+                    <div class="shareItem">
                         <img src="copyicon.png">
+                        <div id="copyLink">
+                            <h3>Copy link</h3>
+                            <p>https://bowiecyberpatriots.com/fund/1</p>
+                            <!-- NOTE: replace with real url! -->
+                        </div>
+
                     </div>
-                    <div class="actionIcon">
+                    <div class="shareItem">
                         <img src="emailicon.png">
+                        <h3>Email</h3>
+
                     </div>
-                    <div class="actionIcon">
-                        <img src="facebookicon.svg">
+                    <div class="shareItem">
+                        <svg>
+                            <use href="/svg.svg#facebook-circle"></use>
+                        </svg>
+                        <h3>Facebook</h3>
+
                     </div>
 
                 </div>
                 <div class="row">
-                    <div class="actionIcon">
-                        <img src="instagramicon.png">
+                    <div class="shareItem">
+                        <svg>
+                            <use href="/svg.svg#whatsapp-circle"></use>
+                        </svg>
+                        <h3>Whatsapp</h3>
+
                     </div>
-                    <div class="actionIcon">
-                        <img src="messenger-logo.webp">
+                    <div class="shareItem">
+                        <img src="messengerlogo.jpg">
+                        <h3>Messenger</h3>
+
                     </div>
 
-                    <div class="actionIcon">
+                    <div class="shareItem">
                         <img src="xicon.svg" style="border-radius: 25%;">
+                        <h3>X</h3>
+
                     </div>
+
+
                 </div>
             </div>
 

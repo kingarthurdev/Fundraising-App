@@ -8,16 +8,282 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
         rel="stylesheet">
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v3.0.6/css/line.css">
+
     <link href="/campaign.css" rel="stylesheet">
-    <link rel="icon" href="/bowiebpa.jpg" type="image/icon type">
+    <link rel="icon" href="<%=camImage%>" type="image/icon type">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <style>
+        .fa-brands,
+        .fab {
+            font-family: "Font Awesome 6 Brands" !important;
+        }
+
+        ::selection {
+            color: #fff;
+            background: var(--primary-color);
+        }
+
+        .popup{
+            position: fixed;
+            left: 50%;
+        }
+        .popup *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .button1 {
+            outline: none;
+            cursor: pointer;
+            font-weight: 500;
+            border-radius: 4px;
+            border: 2px solid transparent;
+            transition: background 0.1s linear, border-color 0.1s linear, color 0.1s linear;
+        }
+
+        .popup {
+            z-index: 9999;
+            background: rgb(255, 254, 254);
+            padding: 25px;
+            border-radius: 15px;
+            top: 10%;
+            max-width: 380px;
+            width: 100%;
+            opacity: 0;
+            pointer-events: none;
+            box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
+            transform: translate(-50%, -50%) scale(1.2);
+            transition: top 0s 0.2s ease-in-out,
+                opacity 0.2s 0s ease-in-out,
+                transform 0.2s 0s ease-in-out;
+        }
+
+        .popup.show {
+            top: 50%;
+            left: 50%;
+            opacity: 1;
+            pointer-events: auto;
+            transform: translate(-50%, -50%) scale(1);
+            transition: top 0s 0s ease-in-out,
+                opacity 0.2s 0s ease-in-out,
+                transform 0.2s 0s ease-in-out;
+
+        }
+
+        .popup :is(header, .icons, .field) {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .popup header {
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ebedf9;
+        }
+
+        header span {
+            font-size: 21px;
+            font-weight: 600;
+        }
+
+        header .close,
+        .icons a {
+            display: flex;
+            align-items: center;
+            border-radius: 50%;
+            justify-content: center;
+            transition: all 0.3s ease-in-out;
+        }
+
+        header .close {
+            color: #878787;
+            font-size: 17px;
+            background: #f3f3f3;
+            height: 33px;
+            width: 33px;
+            cursor: pointer;
+        }
+
+        header .close:hover {
+            background: #ebedf9;
+        }
+
+        .popup .content {
+            margin: 20px 0;
+        }
+
+        .popup .icons {
+            margin: 15px 0 20px 0;
+        }
+
+        .content p {
+            font-size: 16px;
+        }
+
+        .content .icons a {
+            height: 50px;
+            width: 50px;
+            font-size: 20px;
+            text-decoration: none;
+            border: 1px solid transparent;
+        }
+
+        .icons a i {
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .icons a:nth-child(1) {
+            color: #1877F2;
+            border-color: #b7d4fb;
+        }
+
+        .icons a:nth-child(1):hover {
+            background: #1877F2;
+        }
+
+        .icons a:nth-child(2) {
+            color: #46C1F6;
+            border-color: #b6e7fc;
+        }
+
+        .icons a:nth-child(2):hover {
+            background: #46C1F6;
+        }
+
+        .icons a:nth-child(3) {
+            color: #3085e1;
+            border-color: #f5bccf;
+        }
+
+        .icons a:nth-child(3):hover {
+            color: #3085e1;
+        }
+
+        .icons a:nth-child(4) {
+            color: #25D366;
+            border-color: #bef4d2;
+        }
+
+        .icons a:nth-child(4):hover {
+            background: #25D366;
+        }
+
+        .icons a:nth-child(5) {
+            color: #0088cc;
+            border-color: #b3e6ff;
+        }
+
+        .icons a:nth-child(5):hover {
+            background: #0088cc;
+        }
+
+        .icons a:hover {
+            color: #fff;
+            border-color: transparent;
+        }
+
+        .icons a:hover i {
+            transform: scale(1.2);
+        }
+
+        .content .field {
+            margin: 12px 0 -5px 0;
+            height: 45px;
+            border-radius: 4px;
+            padding: 0 5px;
+            border: 1px solid #757171;
+        }
+
+        .field.active {
+            border-color: var(--primary-color);
+        }
+
+        .field i {
+            width: 50px;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .field.active i {
+            color: var(--primary-color);
+        }
+
+        .field input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .field button {
+            color: #fff;
+            padding: 5px 18px;
+            background: var(--primary-color);
+        }
+
+        .field button:hover {
+            background: var(--primary-color);
+        }
+
+        .modalBackdrop {
+            width: 100vw;
+            height: 100vh;
+            z-index: 9998;
+            background-color: rgb(0, 0, 0);
+            opacity: .5;
+            position: fixed;
+        }
+
+        .visible {
+            visibility: visible !important;
+        }
+
+        .scrollLock {
+            overflow: hidden !important;
+        }
+    </style>
+
 </head>
 
 <body>
     <div style="display:none;" id="id">
         <%=fundId %>
     </div>
+
+    <div class="modalBackdrop" style="visibility: hidden;"></div>
+
+    <div class="popup">
+        <header>
+            <span>Share Fundraiser</span>
+            <div class="close"><i class="uil uil-times"></i></div>
+        </header>
+        <div class="content">
+            <p>Share this link via</p>
+            <ul class="icons">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fa-solid fa-comment"></i></a>
+                <a href="#"><i class="fab fa-whatsapp"></i></a>
+                <a href="#" id = "envelope"><i class="far fa-envelope"></i></a>
+            </ul>
+            <p>Or copy link</p>
+            <div class="field">
+                <i class="url-icon uil uil-link"></i>
+                <input type="text" id="site" readonly value="">
+                <button button1>Copy</button>
+            </div>
+        </div>
+    </div>
+
+
     <div class="topbarWrapper">
         <div class="topbar">
             <div id="logoname" class="hidden">
@@ -30,12 +296,12 @@
             </div>
 
             <div class="topButtonsContainer">
-                <button class="topButton"><strong>Share</strong></button>
-                <svg class="" style="height:30px;" xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
-                    <path
+                <button class="topButton view-modal button1"><strong>Share</strong></button>
+                <!--<svg class="" style="height:30px;" xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 448 512"> --><!--!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+                <!--<path
                         d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z" />
-                </svg>
+                </svg>-->
             </div>
         </div>
 
@@ -85,12 +351,12 @@
             <div class="aboutmessage">
                 <p class="abouttitle">About our Fundraiser</p>
                 </strong></p>
-                <%- message %>    <!--NOTE: THIS IS NOW NOT ESCAPED!! VULN TO XSS IF BAD STUFF INJECTED!-->               
-                <span class="nomargin">
-                    <p>Thank You,</p>
+                <%- message %> <!--NOTE: THIS IS NOW NOT ESCAPED!! VULN TO XSS IF BAD STUFF INJECTED!-->
+                    <span class="nomargin">
+                        <p>Thank You,</p>
 
-                    <%= programLeader %>
-                </span>
+                        <%= programLeader %>
+                    </span>
 
             </div>
 
@@ -185,7 +451,7 @@
 
 
         <div style="width:100%; min-height: 100px;">
-            <h1 id="thanks" >A Huge Thank You to Our Supporters!</h1>
+            <h1 id="thanks">A Huge Thank You to Our Supporters!</h1>
 
             <div id="columnParent">
                 <div class="donorColumn" id="column1">
@@ -228,18 +494,23 @@
             "click", updateComments
         )
 
+
+
         if (percent >= 5) {
             document.querySelector(".progress1").value = percent;
         } else {
-            if(window.innerWidth<=390){
+            if (window.innerWidth <= 390) {
                 document.querySelector(".progress1").value = 10;
             }
-            else{
+            else {
                 document.querySelector(".progress1").value = 5;
             }
         }
         updateComments();
 
+        let url = window.location.href;
+        document.querySelector("#envelope").href = "mailto:?subject=Support the Bowie CyberSecurity Club Fundraiser&body=Hi!%0D%0A%0D%0AThe Bowie CyberSecurity Club is dedicated to educating and empowering students in the field of cybersecurity. Our club offers hands-on training, participates in national competitions like CyberPatriots, and hosts workshops that develop critical skills such as teamwork, problem-solving, and ethical decision-making.%0D%0A%0D%0AWe are currently running a fundraiser to support our efforts. Your contribution will help cover competition fees, training materials, and community outreach. By supporting us, you are investing in the future of digital security and helping to inspire the next generation of cyber defenders.%0D%0A%0D%0AYou can make a difference by donating at: ["+url +"]("+url+")%0D%0A%0D%0AThank you for your support!%0D%0A%0D%0A"
+        document.querySelector("#site").value = url.replace("?share=true","");
 
         async function updateComments() {
             const url = `/api/fetchComments?id=${fundId}&startIndex=${startIndex}`;
@@ -333,6 +604,47 @@
 
 
 
+    </script>
+    <script>
+
+        const viewBtn = document.querySelector(".view-modal"),
+            popup = document.querySelector(".popup"),
+            close = popup.querySelector(".close"),
+            field = popup.querySelector(".field"),
+            input = field.querySelector("input"),
+            copy = field.querySelector("button");
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('share')) {
+            setTimeout(function () {
+                viewBtn.click();
+            }, 500);
+
+        } else {
+            console.log(urlParams.get('share'));
+        }
+
+        viewBtn.onclick = () => {
+            popup.classList.toggle("show");
+            document.querySelector(".modalBackdrop").classList.toggle("visible");
+            document.querySelector("body").classList.toggle("scrollLock")
+        }
+        close.onclick = () => {
+            viewBtn.click();
+        }
+
+        copy.onclick = () => {
+            input.select(); //select input value
+            if (document.execCommand("copy")) { //if the selected text is copied
+                field.classList.add("active");
+                copy.innerText = "Copied";
+                setTimeout(() => {
+                    window.getSelection().removeAllRanges(); //remove selection from page
+                    field.classList.remove("active");
+                    copy.innerText = "Copy";
+                }, 3000);
+            }
+        }
     </script>
 </body>
 

@@ -11,7 +11,7 @@ todo: make sure that only the $ that should go to the fundraiser is recorded, mi
 
 require('dotenv').config();
 const bcrypt = require('bcrypt'); //for user pass encryption
-const port = 80;
+const port = 8000;
 const express = require('express')
 const mysql = require('mysql')
 const app = express();
@@ -31,6 +31,16 @@ const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
+var SibApiV3Sdk = require('sib-api-v3-sdk');
+var defaultClient = SibApiV3Sdk.ApiClient.instance;
+
+// Configure API key authorization: api-key
+var apiKey = defaultClient.authentications['api-key'];
+apiKey.apiKey = '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';
+var apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+var sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail(); // SendSmtpEmail | Values to send a transactional email
+
 
 /*
 const accountsFile = require('./accounts'); // this should let us use the accounts file?
@@ -187,6 +197,7 @@ app.post("/update-payment-intent", async (req, res) => {
   let customer;
   let name = req.body.custName + "";
   let email = req.body.custEmail + "";
+
   try {
     try {
       customer = await stripe.customers.create({
@@ -207,10 +218,16 @@ app.post("/update-payment-intent", async (req, res) => {
 
     if (cleanDonation > 99999999) {
       cleanDonation = 99999998;
+    }else if(cleanDonation<100){
+      cleanDonation = 100; 
+      console.log("Value too low, replacing with $1 or 100 cents"); // or should reject transaction...
     }
+
     let totalint = cleanDonation;
 
     if (customer) {
+      console.log("here is what I will be submitting: amount:" +totalint +", application fee amount is 1000 as default, this goes through, but then I send another update that tries to send the actual application fee amount which is this: "+parseInt(req.body.totaltip * 100) );
+
       let paymentIntent = await stripe.paymentIntents.update(
         req.body.PI,
         {
@@ -229,6 +246,7 @@ app.post("/update-payment-intent", async (req, res) => {
         }
       );
     } else {
+      console.log("I'm in the else statement, there is no customer");
       let paymentIntent = await stripe.paymentIntents.update(
         req.body.PI,
         {
@@ -260,6 +278,7 @@ app.post("/update-payment-intent", async (req, res) => {
 
 app.post("/verify-payment", async (req, res) => {
 
+
   getTransaction(req.body.id).then((response) => {
     if (response == null || response == undefined) {
       console.log("Transaction not found");
@@ -272,7 +291,8 @@ app.post("/verify-payment", async (req, res) => {
               connection.query(`select succeeded from transactions where paymentid = ${connection.escape(req.body.id)}`, (error, response) => {
                 if (JSON.stringify(response[0].succeeded) == "null" || JSON.stringify(response[0].succeeded) == 0) {
                   // process to begin updating transactions to process new funds 
-                  updateFunds(req.body.fundId, req.body.id, paymentIntent, req.body.donationAmount).then(result => {
+                  //the custName is the name on the credit card, the cust email is the email submitted on the payment form, the totaltip is the tip for the developers, the globalFee is the cc processing fee
+                  updateFunds(req.body.fundId, req.body.id, paymentIntent, req.body.donationAmount, req.body.custName, req.body.custEmail, req.body.totaltip, req.body.globalFee).then(result => {
                     console.log(result);
                     res.status(200).json({ message: result });
                   }).catch(err => {
@@ -314,8 +334,13 @@ async function getTransaction(paymentId) {
 }
 
 
-async function updateFunds(fundId, paymentId, paymentIntent, claimedAmount) {
+async function updateFunds(fundId, paymentId, paymentIntent, claimedAmount, ccName, ccEmail, totaltip, ccProcessingFee) {
   return new Promise((resolve, reject) => {
+    totaltip = parseFloat(parseInt((totaltip+.00001)*100)/100);
+    ccProcessingFee = parseFloat(parseInt((ccProcessingFee+.00001)*100)/100);
+
+    console.log("Here are the deets in this format: ccName, ccEmail, totaltip, ccProcessingFee" + ccName, ccEmail, totaltip, ccProcessingFee);
+
     try {
       let amount;
       const d = new Date();
@@ -326,11 +351,15 @@ async function updateFunds(fundId, paymentId, paymentIntent, claimedAmount) {
       let difference = Math.abs(claimedAmount - (paymentIntent.amount_received / 1.04 - paymentIntent.application_fee_amount) / 100);
       //console.log(difference, "      ", claimedAmount, '         ', (paymentIntent.amount_received / 1.04) - paymentIntent.application_fee_amount) / 100;
       //so that comments display the correct donated amount, minus potential card processing fees.   
-      if (difference <= 1) {
+      if (difference <= 1 || (claimedAmount+totaltip+ccProcessingFee) == paymentIntent.amount_received ) {
         amount = claimedAmount;
       } else {
         amount = (paymentIntent.amount_received - paymentIntent.application_fee_amount) / 100;
       }
+      //amounts are now verified?
+      //send confirmation email here
+      sendConfirmationEmail(amount, ccName, ccEmail, totaltip, ccProcessingFee, fundId, d)
+      
       connection.query(`update transactions set amount = ${connection.escape(amount)} where paymentid = ${connection.escape(paymentId)}`);
 
       amount *= 100; // convert back into cents format for database. 
@@ -864,5 +893,330 @@ app.post('/account_session', async (req, res) => {
   }
 });
 
+async function sendConfirmationEmail(amount, ccName, ccEmail, totaltip, ccProcessingFee, fundId,date){
+  let campaignDetails = await connectSQL(fundId);
+  let fundName = campaignDetails[0].camName;
+  var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+
+
+  sendSmtpEmail = {
+      to: [{
+          email: `${ccEmail}`,
+          name: `${ccName}`
+      }],
+      sender: {
+          name: 'Bowie Fundraising',
+          email: 'chenarthur41@gmail.com'
+      },
+      htmlContent: `<!DOCTYPE html>
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" lang="en">
+
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><!--[if mso]><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch><o:AllowPNG/></o:OfficeDocumentSettings></xml><![endif]--><!--[if !mso]><!--><!--<![endif]-->
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  a[x-apple-data-detectors] {
+    color: inherit !important;
+    text-decoration: inherit !important;
+  }
+
+  #MessageViewBody a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  p {
+    line-height: inherit
+  }
+
+  .desktop_hide,
+  .desktop_hide table {
+    mso-hide: all;
+    display: none;
+    max-height: 0px;
+    overflow: hidden;
+  }
+
+  .image_block img+div {
+    display: none;
+  }
+
+  sup,
+  sub {
+    line-height: 0;
+    font-size: 75%;
+  }
+
+  #converted-body .list_block ul,
+  #converted-body .list_block ol,
+  .body [class~="x_list_block"] ul,
+  .body [class~="x_list_block"] ol,
+  u+.body .list_block ul,
+  u+.body .list_block ol {
+    padding-left: 20px;
+  }
+
+  @media (max-width:520px) {
+    .desktop_hide table.icons-inner {
+      display: inline-block !important;
+    }
+
+    .icons-inner {
+      text-align: center;
+    }
+
+    .icons-inner td {
+      margin: 0 auto;
+    }
+
+    .mobile_hide {
+      display: none;
+    }
+
+    .row-content {
+      width: 100% !important;
+    }
+
+    .stack .column {
+      width: 100%;
+      display: block;
+    }
+
+    .mobile_hide {
+      min-height: 0;
+      max-height: 0;
+      max-width: 0;
+      overflow: hidden;
+      font-size: 0px;
+    }
+
+    .desktop_hide,
+    .desktop_hide table {
+      display: table !important;
+      max-height: none !important;
+    }
+  }
+</style><!--[if mso ]><style>sup, sub { font-size: 100% !important; } sup { mso-text-raise:10% } sub { mso-text-raise:-10% }</style> <![endif]-->
+</head>
+
+<body class="body" style="background-color: #ffffff; margin: 0; padding: 0; -webkit-text-size-adjust: none; text-size-adjust: none;">
+<table class="nl-container" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #ffffff;">
+  <tbody>
+    <tr>
+      <td>
+        <table class="row row-1" align="center" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+          <tbody>
+            <tr>
+              <td>
+                <table class="row-content stack" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-radius: 0; color: #000000; width: 500px; margin: 0 auto;" width="500">
+                  <tbody>
+                    <tr>
+                      <td class="column column-1" width="100%" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-bottom: 5px; padding-top: 5px; vertical-align: top; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;">
+                        <table class="heading_block block-1" width="100%" border="0" cellpadding="10" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                          <tr>
+                            <td class="pad" style="background-color: #29335c;">
+                              <h1 style="margin: 0; color: #ffffff; direction: ltr; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 38px; font-weight: 700; letter-spacing: normal; line-height: 120%; text-align: center; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 45.6px;"><span class="tinyMce-placeholder" style="word-break: break-word;">Thank you for your donation! </span></h1>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="row row-2" align="center" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+          <tbody>
+            <tr>
+              <td>
+                <table class="row-content stack" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; color: #000000; width: 500px; margin: 0 auto;" width="500">
+                  <tbody>
+                    <tr>
+                      <td class="column column-1" width="100%" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-bottom: 5px; padding-top: 5px; vertical-align: top; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;">
+                        <table class="paragraph_block block-1" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;">
+                          <tr>
+                            <td class="pad" style="padding-bottom:30px;padding-left:10px;padding-right:10px;padding-top:30px;">
+                              <div style="color:#444a5b;direction:ltr;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:17px;font-weight:400;letter-spacing:0px;line-height:150%;text-align:left;mso-line-height-alt:25.5px;">
+                                <p style="margin: 0;">Thank you so much for contributing to the success of ${fundName}! We couldn't do it without your support.&nbsp;</p>
+                              </div>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="row row-3" align="center" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+          <tbody>
+            <tr>
+              <td>
+                <table class="row-content stack" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-radius: 0; color: #000000; width: 500px; margin: 0 auto;" width="500">
+                  <tbody>
+                    <tr>
+                      <td class="column column-1" width="100%" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-bottom: 5px; padding-top: 5px; vertical-align: top; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;">
+                        <table class="heading_block block-1" width="100%" border="0" cellpadding="10" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                          <tr>
+                            <td class="pad">
+                              <h3 style="margin: 0; color: #29335c; direction: ltr; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 24px; font-weight: 700; letter-spacing: normal; line-height: 120%; text-align: left; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 28.799999999999997px;"><span class="tinyMce-placeholder" style="word-break: break-word;">Donation breakdown:</span></h3>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="row row-4" align="center" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+          <tbody>
+            <tr>
+              <td>
+                <table class="row-content stack" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-radius: 0; color: #000000; width: 500px; margin: 0 auto;" width="500">
+                  <tbody>
+                    <tr>
+                      <td class="column column-1" width="100%" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-bottom: 5px; padding-top: 5px; vertical-align: top; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;">
+                        <table class="list_block block-1" width="100%" border="0" cellpadding="10" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word; color: #101218; direction: ltr; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 16px; font-weight: 400; letter-spacing: 0px; line-height: 120%; text-align: left; mso-line-height-alt: 19.2px;">
+                          <tr>
+                            <td class="pad">
+                              <div style="margin-left:-20px">
+                                <ul style="margin-top: 0; margin-bottom: 0; list-style-type: revert;">
+                                  <li style="Margin: 0 0 9px 0;">You donated \$${parseInt(amount) + parseInt(totaltip) + parseInt(ccProcessingFee)} on ${date.toLocaleDateString("en-US", options)}&nbsp;<div style="margin-left:-10px">
+                                      <ul style="margin-top: 0; margin-bottom: 0; list-style-type: revert;">
+                                        <li style="Margin: 9px 0 9px 0;">Your donation was \$${amount}</li>
+                                        <li style="Margin: 0 0 9px 0;">You donated \$${ccProcessingFee} to cover credit card processing fees</li>
+                                        <li style="Margin: 0 0 9px 0;">You tipped \$${totaltip} to support the developer ❤️</li>
+                                      </ul>
+                                    </div>
+                                  </li>
+                                  <li style="Margin: 0 0 9px 0;">Tax deduction information: This fundraiser is a part of James Bowie High School (Tax ID/EIN: 74-6000064)&nbsp;</li>
+                                  <li style="Margin: 0 0 9px 0;">No goods or services were provided in exchange for this contribution</li>
+                                </ul>
+                              </div>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="row row-5" align="center" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+          <tbody>
+            <tr>
+              <td>
+                <table class="row-content stack" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-radius: 0; color: #000000; width: 500px; margin: 0 auto;" width="500">
+                  <tbody>
+                    <tr>
+                      <td class="column column-1" width="100%" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-bottom: 5px; padding-top: 5px; vertical-align: top; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;">
+                        <table class="heading_block block-1" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                          <tr>
+                            <td class="pad" style="padding-bottom:10px;padding-left:10px;padding-right:10px;padding-top:50px;text-align:center;width:100%;">
+                              <h3 style="margin: 0; color: #29335c; direction: ltr; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 24px; font-weight: 700; letter-spacing: normal; line-height: 120%; text-align: left; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 28.799999999999997px;"><span class="tinyMce-placeholder" style="word-break: break-word;">Support and Refunds:</span></h3>
+                            </td>
+                          </tr>
+                        </table>
+                        <table class="paragraph_block block-2" width="100%" border="0" cellpadding="10" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; word-break: break-word;">
+                          <tr>
+                            <td class="pad">
+                              <div style="color:#444a5b;direction:ltr;font-family:Arial, 'Helvetica Neue', Helvetica, sans-serif;font-size:16px;font-weight:400;letter-spacing:0px;line-height:120%;text-align:left;mso-line-height-alt:19.2px;">
+                                <p style="margin: 0;">Donors to this fundraiser can request refunds only during the period the campaign is active. Please call or send a text to <a href="tel:512-643-4108" target="_blank" style="text-decoration: underline; color: #001992;" rel="noopener">512-643-4108</a> with details of your donation to help resolve any issues related to your experience.</p>
+                              </div>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="row row-6" align="center" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+          <tbody>
+            <tr>
+              <td>
+                <table class="row-content stack" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-radius: 0; color: #000000; width: 500px; margin: 0 auto;" width="500">
+                  <tbody>
+                    <tr>
+                      <td class="column column-1" width="100%" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-bottom: 30px; padding-top: 5px; vertical-align: top; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;">
+                        <table class="heading_block block-1" width="100%" border="0" cellpadding="10" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+                          <tr>
+                            <td class="pad" style="background-color:#29335c; height:100px;">
+                              <h1 style="margin: 0; color: #1e0e4b; direction: ltr; font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif; font-size: 38px; font-weight: 700; letter-spacing: normal; line-height: 120%; text-align: left; margin-top: 0; margin-bottom: 0; mso-line-height-alt: 45.6px;"><span class="tinyMce-placeholder" style="word-break: break-word;"></span></h1>
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <table class="row row-7" align="center" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #ffffff;">
+          <tbody>
+            <tr>
+              <td>
+                <table class="row-content stack" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; color: #000000; width: 500px; margin: 0 auto;" width="500">
+                  <tbody>
+                    <tr>
+                      <td class="column column-1" width="100%" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; font-weight: 400; text-align: left; padding-bottom: 5px; padding-top: 5px; vertical-align: top; border-top: 0px; border-right: 0px; border-bottom: 0px; border-left: 0px;">
+                        <table class="icons_block block-1" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="mso-table-lspace: 0pt; mso-table-rspace: 0pt; text-align: center; line-height: 0;">
+                          <tr>
+                            <td class="pad" style="vertical-align: middle; color: #1e0e4b; font-family: 'Inter', sans-serif; font-size: 15px; padding-bottom: 5px; padding-top: 5px; text-align: center;"><!--[if vml]><table align="center" cellpadding="0" cellspacing="0" role="presentation" style="display:inline-block;padding-left:0px;padding-right:0px;mso-table-lspace: 0pt;mso-table-rspace: 0pt;"><![endif]-->
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+  </tbody>
+</table><!-- End -->
+</body>
+
+</html>`,
+      subject: 'Your Donation Receipt',
+      headers: {
+          'X-Mailin-custom': 'custom_header_1:custom_value_1|custom_header_2:custom_value_2'
+      }
+  };
+  
+  
+  apiInstance.sendTransacEmail(sendSmtpEmail).then(function(data) {
+    console.log('API called successfully. Returned data: ' + JSON.stringify(data));
+  }, function(error) {
+    console.error(error);
+  });
+}
 
 
