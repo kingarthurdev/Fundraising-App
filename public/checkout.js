@@ -8,12 +8,23 @@ const formatter = new Intl.NumberFormat('en-US', {
   currency: 'USD',
 });
 
-
+let tipHidden = 1; // hides tipping option, 0 = unhidden, 1 = hidden
 
 //default donation amounts
 let donationAmount = 100; //$100
 let processing = .04; //4%
+
 let tip = .15;  //15% tip
+if(tipHidden == 1){
+  tip = 0;
+  document.querySelector("#giveatip").style.display="none";
+  document.querySelector("#tipOptional").style.display = "none";
+  document.querySelector("#tipamt").style.display = "none";
+  console.log("Tips option hidden. 0% tip.");
+}else{
+  console.log(tipHidden);
+}
+
 let tipdollars = 0; // if user chooses other, tip =0, tipdollars becomes the amount they put into the other field. 
 let totalamt;
 let newcust = true;
@@ -212,7 +223,7 @@ async function handleSubmit(e) {
   const verified = await fetch("/verify-payment", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ donationAmount, id: globalPaymentIntent, fundId: globalFundId, custName, custEmail, totaltip, globalFee}),
+    body: JSON.stringify({ donationAmount, id: globalPaymentIntent, fundId: globalFundId, custName, custEmail, totaltip, globalFee, tipHidden}),
   });
 
 
