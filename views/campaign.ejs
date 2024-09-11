@@ -29,11 +29,12 @@
             background: var(--primary-color);
         }
 
-        .popup{
+        .popup {
             position: fixed;
             left: 50%;
         }
-        .popup *{
+
+        .popup * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -272,7 +273,7 @@
                 <a href="#"><i class="fab fa-twitter"></i></a>
                 <a href="#"><i class="fa-solid fa-comment"></i></a>
                 <a href="#"><i class="fab fa-whatsapp"></i></a>
-                <a href="#" id = "envelope"><i class="far fa-envelope"></i></a>
+                <a href="#" id="envelope"><i class="far fa-envelope"></i></a>
             </ul>
             <p>Or copy link</p>
             <div class="field">
@@ -505,13 +506,13 @@
             else {
                 document.querySelector(".progress1").value = 5;
             }
-            if()
+
         }
         updateComments();
 
         let url = window.location.href;
-        document.querySelector("#envelope").href = "mailto:?subject=Support the Bowie CyberSecurity Club Fundraiser&body=Hi!%0D%0A%0D%0AThe Bowie CyberSecurity Club is dedicated to educating and empowering students in the field of cybersecurity. Our club offers hands-on training, participates in national competitions like CyberPatriots, and hosts workshops that develop critical skills such as teamwork, problem-solving, and ethical decision-making.%0D%0A%0D%0AWe are currently running a fundraiser to support our efforts. Your contribution will help cover competition fees, training materials, and community outreach. By supporting us, you are investing in the future of digital security and helping to inspire the next generation of cyber defenders.%0D%0A%0D%0AYou can make a difference by donating at: ["+url +"]("+url+")%0D%0A%0D%0AThank you for your support!%0D%0A%0D%0A"
-        document.querySelector("#site").value = url.replace("?share=true","");
+        document.querySelector("#envelope").href = "mailto:?subject=Support the Bowie CyberSecurity Club Fundraiser&body=Hi!%0D%0A%0D%0AThe Bowie CyberSecurity Club is dedicated to educating and empowering students in the field of cybersecurity. Our club offers hands-on training, participates in national competitions like CyberPatriots, and hosts workshops that develop critical skills such as teamwork, problem-solving, and ethical decision-making.%0D%0A%0D%0AWe are currently running a fundraiser to support our efforts. Your contribution will help cover competition fees, training materials, and community outreach. By supporting us, you are investing in the future of digital security and helping to inspire the next generation of cyber defenders.%0D%0A%0D%0AYou can make a difference by donating at: [" + url + "](" + url + ")%0D%0A%0D%0AThank you for your support!%0D%0A%0D%0A"
+        document.querySelector("#site").value = url.replace("?share=true", "");
 
         async function updateComments() {
             const url = `/api/fetchComments?id=${fundId}&startIndex=${startIndex}`;
@@ -615,15 +616,20 @@
             input = field.querySelector("input"),
             copy = field.querySelector("button");
 
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('share')) {
-            setTimeout(function () {
-                viewBtn.click();
-            }, 500);
+        try {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('share')) {
+                setTimeout(function () {
+                    viewBtn.click();
+                }, 500);
 
-        } else {
-            console.log(urlParams.get('share'));
+            } else {
+                console.log(urlParams.get('share'));
+            }
+        }catch{
+            console.log("no share param");
         }
+        
 
         viewBtn.onclick = () => {
             popup.classList.toggle("show");
