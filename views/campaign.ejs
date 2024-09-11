@@ -499,12 +499,13 @@
         if (percent >= 5) {
             document.querySelector(".progress1").value = percent;
         } else {
-            if (window.innerWidth <= 390) {
+            if (window.innerWidth <= 360) {
                 document.querySelector(".progress1").value = 10;
             }
             else {
                 document.querySelector(".progress1").value = 5;
             }
+            if()
         }
         updateComments();
 
