@@ -292,7 +292,7 @@ app.post("/verify-payment", async (req, res) => {
                 if (JSON.stringify(response[0].succeeded) == "null" || JSON.stringify(response[0].succeeded) == 0) {
                   // process to begin updating transactions to process new funds 
                   //the custName is the name on the credit card, the cust email is the email submitted on the payment form, the totaltip is the tip for the developers, the globalFee is the cc processing fee
-                  updateFunds(req.body.fundId, req.body.id, paymentIntent, req.body.donationAmount, req.body.custName, req.body.custEmail, req.body.totaltip, req.body.globalFee).then(result => {
+                  updateFunds(req.body.fundId, req.body.id, paymentIntent, req.body.donationAmount, req.body.custName, req.body.custEmail, req.body.totaltip, req.body.globalFee, req.body.tipHidden).then(result => {
                     console.log(result);
                     res.status(200).json({ message: result });
                   }).catch(err => {
@@ -334,7 +334,7 @@ async function getTransaction(paymentId) {
 }
 
 
-async function updateFunds(fundId, paymentId, paymentIntent, claimedAmount, ccName, ccEmail, totaltip, ccProcessingFee) {
+async function updateFunds(fundId, paymentId, paymentIntent, claimedAmount, ccName, ccEmail, totaltip, ccProcessingFee, tipHidden) {
   return new Promise((resolve, reject) => {
     totaltip = parseFloat(parseInt((totaltip+.00001)*100)/100);
     ccProcessingFee = parseFloat(parseInt((ccProcessingFee+.00001)*100)/100);
@@ -358,7 +358,7 @@ async function updateFunds(fundId, paymentId, paymentIntent, claimedAmount, ccNa
       }
       //amounts are now verified?
       //send confirmation email here
-      sendConfirmationEmail(amount, ccName, ccEmail, totaltip, ccProcessingFee, fundId, d)
+      sendConfirmationEmail(amount, ccName, ccEmail, totaltip, ccProcessingFee, fundId, d, tipHidden);
       
       connection.query(`update transactions set amount = ${connection.escape(amount)} where paymentid = ${connection.escape(paymentId)}`);
 
@@ -857,13 +857,16 @@ app.post("/api/submitComment", async (req, res) => {
 });
 
 function escapeHtml(unsafe) {
+  /*
   unsafe = unsafe+"";
   return unsafe
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+    .replace(/'/g, "&#039;");*/
+  console.log("temp not escaping input! ");
+  return unsafe;
 }
 
 //code from stripe
@@ -893,11 +896,18 @@ app.post('/account_session', async (req, res) => {
   }
 });
 
-async function sendConfirmationEmail(amount, ccName, ccEmail, totaltip, ccProcessingFee, fundId,date){
+async function sendConfirmationEmail(amount, ccName, ccEmail, totaltip, ccProcessingFee, fundId,date, tipHidden){
+
   let campaignDetails = await connectSQL(fundId);
   let fundName = campaignDetails[0].camName;
   var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  let potentialCommentOut = ""; 
+  let potentialCommentOut2 = ""; 
 
+  if(tipHidden == 1){
+    potentialCommentOut = "<!--";
+    potentialCommentOut2 = "-->";
+  }
 
   sendSmtpEmail = {
       to: [{
@@ -1098,11 +1108,11 @@ async function sendConfirmationEmail(amount, ccName, ccEmail, totaltip, ccProces
                             <td class="pad">
                               <div style="margin-left:-20px">
                                 <ul style="margin-top: 0; margin-bottom: 0; list-style-type: revert;">
-                                  <li style="Margin: 0 0 9px 0;">You donated \$${parseInt(amount) + parseInt(totaltip) + parseInt(ccProcessingFee)} on ${date.toLocaleDateString("en-US", options)}&nbsp;<div style="margin-left:-10px">
+                                  <li style="Margin: 0 0 9px 0;">You donated \$${parseInt(amount*100)/100 + parseInt(totaltip*100)/100 + parseInt(ccProcessingFee*100)/100} on ${date.toLocaleDateString("en-US", options)}&nbsp;<div style="margin-left:-10px">
                                       <ul style="margin-top: 0; margin-bottom: 0; list-style-type: revert;">
-                                        <li style="Margin: 9px 0 9px 0;">Your donation was \$${amount}</li>
-                                        <li style="Margin: 0 0 9px 0;">You donated \$${ccProcessingFee} to cover credit card processing fees</li>
-                                        <li style="Margin: 0 0 9px 0;">You tipped \$${totaltip} to support the developer ❤️</li>
+                                        <li style="Margin: 9px 0 9px 0;">Your donation was \$${parseInt(amount*100)/100}</li>
+                                        <li style="Margin: 0 0 9px 0;">You donated \$${parseInt(ccProcessingFee*100)/100} to cover credit card processing fees</li>
+                                        `+potentialCommentOut+`<li style="Margin: 0 0 9px 0;">You tipped \$${parseInt(totaltip*100)/100} to support the developer ❤️</li>`+potentialCommentOut2+`
                                       </ul>
                                     </div>
                                   </li>
