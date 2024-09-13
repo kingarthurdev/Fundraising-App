@@ -250,8 +250,9 @@
         .scrollLock {
             overflow: hidden !important;
         }
-        .donorColumn:empty{
-            margin:0;
+
+        .donorColumn:empty {
+            margin: 0;
         }
     </style>
 
@@ -274,7 +275,7 @@
             <ul class="icons">
                 <a href="#" id="facebook"><i class="fab fa-facebook-f"></i></a>
                 <a href="#" id="twitter"><i class="fab fa-twitter"></i></a>
-                <a href="#" id = "text"><i class="fa-solid fa-comment"></i></a>
+                <a href="#" id="text"><i class="fa-solid fa-comment"></i></a>
                 <a href="#" id="whatsapp"><i class="fab fa-whatsapp"></i></a>
                 <a href="#" id="envelope"><i class="far fa-envelope"></i></a>
             </ul>
@@ -511,12 +512,22 @@
 
         let url = window.location.href;
         let urlClean = url.replace("?share=true", "");
-        let text = encodeURIComponent(`Hi, I'd really appreciate it if you would share or donate to this fundraiser: ${urlClean}. Thank you! `)
-        document.querySelector("#envelope").href = "mailto:?subject=Support the Bowie CyberSecurity Club Fundraiser&body=Hi!%0D%0A%0D%0AThe Bowie CyberSecurity Club is dedicated to educating and empowering students in the field of cybersecurity. Our club offers hands-on training, participates in national competitions like CyberPatriots, and hosts workshops that develop critical skills such as teamwork, problem-solving, and ethical decision-making.%0D%0A%0D%0AWe are currently running a fundraiser to support our efforts. Your contribution will help cover competition fees, training materials, and community outreach. By supporting us, you are investing in the future of digital security and helping to inspire the next generation of cyber defenders.%0D%0A%0D%0AYou can make a difference by donating at: [" + url + "](" + url + ")%0D%0A%0D%0AThank you for your support!%0D%0A%0D%0A"
+        let text = encodeURIComponent(`Hi, I'd really appreciate it if you would share or donate to this fundraiser: ${urlClean} to help support <%= fundName %>. Thank you! `)
+        let twitter = "https://x.com/intent/post?lang=en&text=" + encodeURIComponent("Come support <%= fundName %> by sharing or donating! Thank you! " + urlClean);
+        let whatsapp = "https://api.whatsapp.com/send?text=" + text;
+
         
+        if("<%= fundName %>"== "Bowie CyberSecurity Club"){
+            document.querySelector("#envelope").href = "mailto:?subject=Support the Bowie CyberSecurity Club Fundraiser&body=Hi!%0D%0A%0D%0AThe Bowie CyberSecurity Club is dedicated to educating and empowering students in the field of cybersecurity. Our club offers hands-on training, participates in national competitions like CyberPatriots, and hosts workshops that develop critical skills such as teamwork, problem-solving, and ethical decision-making.%0D%0A%0D%0AWe are currently running a fundraiser to support our efforts. Your contribution will help cover competition fees, training materials, and community outreach. By supporting us, you are investing in the future of digital security and helping to inspire the next generation of cyber defenders.%0D%0A%0D%0AYou can make a difference by donating at: [" + url + "](" + url + ")%0D%0A%0D%0AThank you for your support!%0D%0A%0D%0A"
+        }else{
+            document.querySelector("#envelope").href = "mailto:?subject=Support the <%= fundName %> Fundraiser&body=" + encodeURIComponent(`Hi, I'd really appreciate it if you would share or donate to this fundraiser: ${urlClean} to help support <%= fundName %>. Thank you! `);
+        }
+
         document.querySelector("#text").href = "sms:?&body=" + text;
         document.querySelector("#site").value = urlClean;
-
+        document.querySelector("#whatsapp").href = whatsapp;
+        document.querySelector("#facebook").href= "https://www.facebook.com/share_channel/?link="+urlClean; 
+        document.querySelector("#twitter").href = twitter;
         async function updateComments() {
             const url = `/api/fetchComments?id=${fundId}&startIndex=${startIndex}`;
             try {
@@ -629,10 +640,10 @@
             } else {
                 console.log(urlParams.get('share'));
             }
-        }catch{
+        } catch {
             console.log("no share param");
         }
-        
+
 
         viewBtn.onclick = () => {
             popup.classList.toggle("show");
