@@ -4,15 +4,7 @@
     <title>
         <%= fundName %>
     </title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
-        rel="stylesheet">
-
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v3.0.6/css/line.css">
 
     <link href="/campaign.css" rel="stylesheet">
     <link rel="icon" href="<%=camImage%>" type="image/icon type">
@@ -268,7 +260,8 @@
     <div class="popup">
         <header>
             <span>Share Fundraiser</span>
-            <div class="close"><i class="uil uil-times"></i></div>
+            <div class="close"><i class="fa-light fa-x"></i></i>
+            </div>
         </header>
         <div class="content">
             <p>Share this link via</p>
@@ -281,8 +274,7 @@
             </ul>
             <p>Or copy link</p>
             <div class="field">
-                <i class="url-icon uil uil-link"></i>
-                <input type="text" id="site" readonly value="">
+                <i class="fa-duotone fa-solid fa-link"></i>                <input type="text" id="site" readonly value="">
                 <button button1>Copy</button>
             </div>
         </div>
@@ -516,17 +508,17 @@
         let twitter = "https://x.com/intent/post?lang=en&text=" + encodeURIComponent("Come support <%= fundName %> by sharing or donating! Thank you! " + urlClean);
         let whatsapp = "https://api.whatsapp.com/send?text=" + text;
 
-        
-        if("<%= fundName %>"== "Bowie CyberSecurity Club"){
+
+        if ("<%= fundName %>" == "Bowie CyberSecurity Club") {
             document.querySelector("#envelope").href = "mailto:?subject=Support the Bowie CyberSecurity Club Fundraiser&body=Hi!%0D%0A%0D%0AThe Bowie CyberSecurity Club is dedicated to educating and empowering students in the field of cybersecurity. Our club offers hands-on training, participates in national competitions like CyberPatriots, and hosts workshops that develop critical skills such as teamwork, problem-solving, and ethical decision-making.%0D%0A%0D%0AWe are currently running a fundraiser to support our efforts. Your contribution will help cover competition fees, training materials, and community outreach. By supporting us, you are investing in the future of digital security and helping to inspire the next generation of cyber defenders.%0D%0A%0D%0AYou can make a difference by donating at: [" + url + "](" + url + ")%0D%0A%0D%0AThank you for your support!%0D%0A%0D%0A"
-        }else{
+        } else {
             document.querySelector("#envelope").href = "mailto:?subject=Support the <%= fundName %> Fundraiser&body=" + encodeURIComponent(`Hi, I'd really appreciate it if you would share or donate to this fundraiser: ${urlClean} to help support <%= fundName %>. Thank you! `);
         }
 
         document.querySelector("#text").href = "sms:?&body=" + text;
         document.querySelector("#site").value = urlClean;
         document.querySelector("#whatsapp").href = whatsapp;
-        document.querySelector("#facebook").href= "https://www.facebook.com/share_channel/?link="+urlClean; 
+        document.querySelector("#facebook").href = "https://www.facebook.com/share_channel/?link=" + urlClean;
         document.querySelector("#twitter").href = twitter;
         async function updateComments() {
             const url = `/api/fetchComments?id=${fundId}&startIndex=${startIndex}`;
