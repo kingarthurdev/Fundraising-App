@@ -218,7 +218,6 @@ input[type=number] {
   margin-top: 6px;
   border-style: solid;
   border-width: 1px;
-  display: none;
 }
 
 #giveatip {
@@ -433,4 +432,7 @@ button:disabled {
     width: 80vw;
     min-width: initial;
   }
+}
+#learnMore:hover {
+  cursor: pointer;
 }

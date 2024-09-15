@@ -473,8 +473,8 @@ h1 {
   }
   .donateProgBox{
     width:100%;
-    padding:10px;
-    padding-top: 30px;
+    padding:20px;
+    /*padding-top: 30px;*/
   }
   #split {
     height: auto;
@@ -567,9 +567,13 @@ h1 {
   box-shadow: inset 0 0 4px grey;
 }
 
+
 .progress::-webkit-progress-bar,
 .progress::-webkit-progress-value {
   border-radius: 20px;
+}
+.progress::-webkit-progress-bar{
+  overflow: hidden;
 }
 
 

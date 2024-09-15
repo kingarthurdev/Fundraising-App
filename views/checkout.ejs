@@ -98,14 +98,14 @@
                         <div>
                             <label for="covercardfees"><span style="font-weight:600;">Cover card processing fees (4%)
                                 </span></label>
-                            <span style="text-decoration: underline; " onclick="toggleAboutProcessing()">Learn
+                            <span id = "learnMore"style="text-decoration: underline; " onclick="toggleAboutProcessing()">Learn
                                 more</span>
                         </div>
                     </div>
                     <div style="color:rgb(57, 57, 57); margin-top:2px; font-size:.95rem">So that 100% of your donation
                         goes to <%= fundName %>
                     </div>
-                    <div id="aboutprocessing">
+                    <div id="aboutprocessing" class="hidden">
                         Processing fees are always charged by companies like Visa and MasterCard, no matter what
                         platform you use. RoyalFundraising makes the processing fees 100% transparent and takes a 0%
                         platform fee on top.
@@ -137,6 +137,7 @@
                         placeholder="$0" type="number"/>
 
                 </div>
+                <div style="width:100%;height:.7px;background: #bfbfbf;position:relative;left:-8px; margin-top:10px; margin-bottom:10px;"></div>
                 <div>
 
                 </div>

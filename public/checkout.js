@@ -139,11 +139,14 @@ function updateCoverFees() {
 }
 
 function toggleAboutProcessing() {
+  document.getElementById("aboutprocessing").classList.toggle("hidden");
+  
+  /*
   if (document.getElementById("aboutprocessing").style.display == "none") {
     document.getElementById("aboutprocessing").style.display = "block";
   } else {
     document.getElementById("aboutprocessing").style.display = "none"
-  }
+  }*/
 
 }
 
