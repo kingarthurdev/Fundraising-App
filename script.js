@@ -794,6 +794,21 @@ app.get("/api/fetchComments", async (req, res) => {
   });
 });
 
+app.get('/api/getNumberOfComments', async (req, res) => {
+  fundId = req.query.id;
+  /*connection.query(`SELECT COUNT(*) from transactions where fundraiserid = ${connection.escape(fundId)} and succeeded = 1;`, (err, results) => {
+    if (err) {
+      console.log(err);
+      return res.sendStatus(400);
+    } else {
+      return res.send(results[0]);
+      
+    }
+  });*/
+
+})
+
+
 /*
 const d = new Date();
     let date = d.getTime();
@@ -824,9 +839,17 @@ app.post("/api/submitComment", async (req, res) => {
       return res.sendStatus(400); // Return 400 if comment is too long
     }*/
     
-    // Escape HTML to prevent XSS
+    // Escape HTML to prevent XSS //NOT CURRENTLY DOING THINGS B/C the escape function is off rn
     comment = escapeHtml(comment);
     name = escapeHtml(name);
+
+    if(comment.length >= 300){
+      comment = comment.substring(0, 300);
+    }
+    if(name.length>= 32){
+      name = name.substring(0, 32);
+    }
+    
     console.log("cleaned? comment"+ comment);
 
     // Construct SQL query
@@ -1230,3 +1253,16 @@ async function sendConfirmationEmail(amount, ccName, ccEmail, totaltip, ccProces
 }
 
 
+
+app.get('/api/getCamInfo', async (req, res) => {
+  const id = parseInt(req.query.id);
+  try {
+    let results = await connectSQL(id);
+    console.log(results);
+    res.send(results[0]);
+
+  } catch {
+    console.log("error in getting cam info.");
+  }
+
+})

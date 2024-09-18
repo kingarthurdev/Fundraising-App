@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap"
         rel="stylesheet">
     <link href="/thankyou.css" rel="stylesheet">
-    <link rel="icon" href="/bowiebpa.jpg" type="image/icon type">
+    <link rel="icon" id="fundLogo" href="/bowiebpa.jpg" type="image/icon type">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
     <script src="/thankyou.js" defer></script>
@@ -23,7 +23,7 @@
             <img src="/bowiebpa.jpg" alt="Bowie BPA Logo">
         </div>-->
         <div id="logoname"> <!-- class="hidden"> -->
-            <h2>Bowie Business Professionals of America</h2>
+            <a href="" id="fundLink"><h2 id="fundName">Bowie Business Professionals of America</h2></a>
         </div>
     </div>
     <center>
@@ -31,7 +31,7 @@
             <h1>Thank You!</h1>
             <p>Your generous donation is greatly appreciated! Your support helps us continue our mission. We've sent you
                 a confirmation email with tax deductible information.</p>
-            <input id="name" type="text" placeholder="Add your name to the cheer wall (optional)">
+            <input id="name" type="text" placeholder="Add your name to the cheer wall (optional)" maxlength="32">
             <textarea id="message" placeholder="Add a comment for the cheer wall (optional)" style="height: 89px;" maxlength="300"></textarea>
             <button id="submit">Submit</button>
         </div>

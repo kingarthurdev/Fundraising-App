@@ -70,6 +70,8 @@ button {
 
 .topbar * {
     display: inline;
+    color: white !important;
+    text-decoration: none;
 }
 
 #logo img {

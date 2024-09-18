@@ -93,6 +93,7 @@
         }).then(r => {
             if (r.status == 200) {
                 window.location = "/dashboard";
+                window.location.reload();
             } else {
                 console.log("asdf")
                 document.getElementById("wrong").style = "display:block !important;";
