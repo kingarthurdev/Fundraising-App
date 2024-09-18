@@ -1137,11 +1137,23 @@ async function sendConfirmationEmail(amount, ccName, ccEmail, totaltip, ccProces
                             <td class="pad">
                               <div style="margin-left:-20px">
                                 <ul style="margin-top: 0; margin-bottom: 0; list-style-type: revert;">
-                                  <li style="Margin: 0 0 9px 0;">You donated \$${parseInt(amount*100)/100 + parseInt(totaltip*100)/100 + parseInt(ccProcessingFee*100)/100} on ${date.toLocaleDateString("en-US", options)}&nbsp;<div style="margin-left:-10px">
+                                  <li style="Margin: 0 0 9px 0;">You donated ${Intl.NumberFormat('en-US', {
+                                    style: 'currency',
+                                    currency: 'USD',
+                                }).format(parseInt(amount*100)/100 + parseInt(totaltip*100)/100 + parseInt(ccProcessingFee*100)/100)} on ${date.toLocaleDateString("en-US", options)}&nbsp;<div style="margin-left:-10px">
                                       <ul style="margin-top: 0; margin-bottom: 0; list-style-type: revert;">
-                                        <li style="Margin: 9px 0 9px 0;">Your donation was \$${parseInt(amount*100)/100}</li>
-                                        <li style="Margin: 0 0 9px 0;">You donated \$${parseInt(ccProcessingFee*100)/100} to cover credit card processing fees</li>
-                                        `+potentialCommentOut+`<li style="Margin: 0 0 9px 0;">You tipped \$${parseInt(totaltip*100)/100} to support the developer ❤️</li>`+potentialCommentOut2+`
+                                        <li style="Margin: 9px 0 9px 0;">Your donation was ${Intl.NumberFormat('en-US', {
+                                          style: 'currency',
+                                          currency: 'USD',
+                                      }).format(parseInt(amount*100)/100)}</li>
+                                        <li style="Margin: 0 0 9px 0;">You donated ${Intl.NumberFormat('en-US', {
+                                          style: 'currency',
+                                          currency: 'USD',
+                                      }).format(parseInt(ccProcessingFee*100)/100)} to cover credit card processing fees</li>
+                                        `+potentialCommentOut+`<li style="Margin: 0 0 9px 0;">You tipped ${Intl.NumberFormat('en-US', {
+                                          style: 'currency',
+                                          currency: 'USD',
+                                      }).format(parseInt(totaltip*100)/100)} to support the student developer ❤️</li>`+potentialCommentOut2+`
                                       </ul>
                                     </div>
                                   </li>
