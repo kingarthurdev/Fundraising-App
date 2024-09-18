@@ -921,6 +921,7 @@ app.post('/account_session', async (req, res) => {
 
 async function sendConfirmationEmail(amount, ccName, ccEmail, totaltip, ccProcessingFee, fundId,date, tipHidden){
 
+  console.log("Email sending called!!!!!!!!!!!!!!!!!!!!!")
   let campaignDetails = await connectSQL(fundId);
   let fundName = campaignDetails[0].camName;
   var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
