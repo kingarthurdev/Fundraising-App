@@ -11,7 +11,7 @@ todo: make sure that only the $ that should go to the fundraiser is recorded, mi
 
 require('dotenv').config();
 const bcrypt = require('bcrypt'); //for user pass encryption
-const port = 8000;
+const port = process.env.PORT;
 const express = require('express')
 const mysql = require('mysql')
 const app = express();
@@ -358,7 +358,12 @@ async function updateFunds(fundId, paymentId, paymentIntent, claimedAmount, ccNa
       }
       //amounts are now verified?
       //send confirmation email here
-      sendConfirmationEmail(amount, ccName, ccEmail, totaltip, ccProcessingFee, fundId, d, tipHidden);
+      console.log("trying to call send email");
+      try{
+        sendConfirmationEmail(amount, ccName, ccEmail, totaltip, ccProcessingFee, fundId, d, tipHidden);
+      }catch{
+        console.log("Error sending confirmation email");
+      }
       
       connection.query(`update transactions set amount = ${connection.escape(amount)} where paymentid = ${connection.escape(paymentId)}`);
 
