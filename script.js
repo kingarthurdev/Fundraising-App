@@ -193,7 +193,7 @@ app.post("/create-payment-intent", async (req, res) => {
         enabled: true,
       },
       transfer_data: { destination: accountid },
-      application_fee_amount: 1000,
+      application_fee_amount: 0,
     });
     console.log(accountid + " account id");
     //console.log(paymentIntent, " is the payment intent");
@@ -255,31 +255,50 @@ app.post("/update-payment-intent", async (req, res) => {
 
     if (customer) {
       console.log("here is what I will be submitting: amount:" + totalint + ", application fee amount is 1000 as default, this goes through, but then I send another update that tries to send the actual application fee amount which is this: " + parseInt(req.body.totaltip * 100));
-
-      let paymentIntent = await stripe.paymentIntents.update(
-        req.body.PI,
-        {
-          amount: totalint,
-          application_fee_amount: 1000,
-          customer: customer.id,
-        }
-      );
-      // duplicate stuff incase of errors? // honestly idk what the point of this is, but past me put it here... 
-      paymentIntent = await stripe.paymentIntents.update(
-        req.body.PI,
-        {
-          amount: totalint,
-          application_fee_amount: parseInt(req.body.totaltip * 100),
-          customer: customer.id,
-        }
-      );
+      try{
+        let paymentIntent = await stripe.paymentIntents.update(
+          req.body.PI,
+          {
+            amount: totalint,
+            application_fee_amount: 0,
+            customer: customer.id,
+          }
+        );
+        // duplicate stuff incase of errors? // honestly idk what the point of this is, but past me put it here... 
+        paymentIntent = await stripe.paymentIntents.update(
+          req.body.PI,
+          {
+            amount: totalint,
+            application_fee_amount: parseInt(req.body.totaltip * 100),
+            customer: customer.id,
+          }
+        );
+      }catch(e){
+        console.log(e);
+        let paymentIntent = await stripe.paymentIntents.update(
+          req.body.PI,
+          {
+            amount: totalint,
+            application_fee_amount: 0,
+          }
+        );
+        // duplicate stuff incase of errors? // honestly idk what the point of this is, but past me put it here... 
+        paymentIntent = await stripe.paymentIntents.update(
+          req.body.PI,
+          {
+            amount: totalint,
+            application_fee_amount: parseInt(req.body.totaltip * 100),
+          }
+        );
+      }
+      
     } else {
       console.log("I'm in the else statement, there is no customer");
       let paymentIntent = await stripe.paymentIntents.update(
         req.body.PI,
         {
           amount: totalint,
-          application_fee_amount: 1000,
+          application_fee_amount: 0,
         }
       );
       // duplicate stuff incase of errors? // honestly idk what the point of this is, but past me put it here... 
