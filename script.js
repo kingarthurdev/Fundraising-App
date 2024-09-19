@@ -16,9 +16,14 @@ const express = require('express')
 const mysql = require('mysql')
 const app = express();
 app.disable('x-powered-by'); // prevent enumeration of what backend is used
+
 app.listen(port, () => {
   console.log(`Fundraiser app listening on port ${port}`)
 })
+app.listen(process.env.SSLPORT, () => {
+  console.log(`Fundraiser app listening on port ${port}`)
+})
+
 app.use(express.json());//allow request body parsing
 
 app.set('view engine', 'ejs');
