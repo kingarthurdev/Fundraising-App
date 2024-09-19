@@ -18,6 +18,8 @@ const app = express();
 app.disable('x-powered-by'); // prevent enumeration of what backend is used
 const https = require('https');
 const http = require('http');
+const fs = require('fs');
+
 
 if (!process.env.DEVSERVER) {
   const options = {
