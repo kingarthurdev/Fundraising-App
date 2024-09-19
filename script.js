@@ -16,13 +16,34 @@ const express = require('express')
 const mysql = require('mysql')
 const app = express();
 app.disable('x-powered-by'); // prevent enumeration of what backend is used
+const https = require('https');
+const http = require('http');
 
-app.listen(port, () => {
-  console.log(`Fundraiser app listening on port ${port}`)
-})
-app.listen(process.env.SSLPORT, () => {
-  console.log(`Fundraiser app listening on port ${port}`)
-})
+if (!process.env.DEVSERVER) {
+  const options = {
+    key: fs.readFileSync('/etc/letsencrypt/live/bowiefundraising.csproject.org/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/bowiefundraising.csproject.org/fullchain.pem'),
+  };
+  https.createServer(options, app).listen(process.env.SSLPORT, () => {
+    console.log(`HTTPS server listening on port ${process.env.SSLPORT}`);
+  });
+
+  // Start HTTP server for redirecting
+  http.createServer((req, res) => {
+    res.writeHead(301, { "Location": `https://${req.headers.host}${req.url}` });
+    res.end();
+  }).listen(port, () => {
+    console.log(`HTTP server listening on port ${port}`);
+  });
+} else {
+
+  app.listen(port, () => {
+    console.log(`Fundraiser app listening on port ${port}`)
+  })
+}
+
+
+
 
 app.use(express.json());//allow request body parsing
 
@@ -101,7 +122,7 @@ app.get('/fund/:id', async (req, res) => {
       let programLeader = await outcome[0]?.programLeader;
       let message = await outcome[0]?.camDescription;
       let camImage = await outcome[0]?.camImage;
-      let mainCamImage = await outcome[0]?.mainCamImage; 
+      let mainCamImage = await outcome[0]?.mainCamImage;
       res.render('campaign', { fundName, fundId, camFunds, dollarGoal, programLeader, message, camImage, mainCamImage });
     } catch (err) {
       console.log(err);
@@ -223,15 +244,15 @@ app.post("/update-payment-intent", async (req, res) => {
 
     if (cleanDonation > 99999999) {
       cleanDonation = 99999998;
-    }else if(cleanDonation<100){
-      cleanDonation = 100; 
+    } else if (cleanDonation < 100) {
+      cleanDonation = 100;
       console.log("Value too low, replacing with $1 or 100 cents"); // or should reject transaction...
     }
 
     let totalint = cleanDonation;
 
     if (customer) {
-      console.log("here is what I will be submitting: amount:" +totalint +", application fee amount is 1000 as default, this goes through, but then I send another update that tries to send the actual application fee amount which is this: "+parseInt(req.body.totaltip * 100) );
+      console.log("here is what I will be submitting: amount:" + totalint + ", application fee amount is 1000 as default, this goes through, but then I send another update that tries to send the actual application fee amount which is this: " + parseInt(req.body.totaltip * 100));
 
       let paymentIntent = await stripe.paymentIntents.update(
         req.body.PI,
@@ -341,8 +362,8 @@ async function getTransaction(paymentId) {
 
 async function updateFunds(fundId, paymentId, paymentIntent, claimedAmount, ccName, ccEmail, totaltip, ccProcessingFee, tipHidden) {
   return new Promise((resolve, reject) => {
-    totaltip = parseFloat(parseInt((totaltip+.00001)*100)/100);
-    ccProcessingFee = parseFloat(parseInt((ccProcessingFee+.00001)*100)/100);
+    totaltip = parseFloat(parseInt((totaltip + .00001) * 100) / 100);
+    ccProcessingFee = parseFloat(parseInt((ccProcessingFee + .00001) * 100) / 100);
 
     console.log("Here are the deets in this format: ccName, ccEmail, totaltip, ccProcessingFee" + ccName, ccEmail, totaltip, ccProcessingFee);
 
@@ -356,7 +377,7 @@ async function updateFunds(fundId, paymentId, paymentIntent, claimedAmount, ccNa
       let difference = Math.abs(claimedAmount - (paymentIntent.amount_received / 1.04 - paymentIntent.application_fee_amount) / 100);
       //console.log(difference, "      ", claimedAmount, '         ', (paymentIntent.amount_received / 1.04) - paymentIntent.application_fee_amount) / 100;
       //so that comments display the correct donated amount, minus potential card processing fees.   
-      if (difference <= 1 || (claimedAmount+totaltip+ccProcessingFee) == paymentIntent.amount_received ) {
+      if (difference <= 1 || (claimedAmount + totaltip + ccProcessingFee) == paymentIntent.amount_received) {
         amount = claimedAmount;
       } else {
         amount = (paymentIntent.amount_received - paymentIntent.application_fee_amount) / 100;
@@ -364,12 +385,12 @@ async function updateFunds(fundId, paymentId, paymentIntent, claimedAmount, ccNa
       //amounts are now verified?
       //send confirmation email here
       console.log("trying to call send email");
-      try{
+      try {
         sendConfirmationEmail(amount, ccName, ccEmail, totaltip, ccProcessingFee, fundId, d, tipHidden);
-      }catch{
+      } catch {
         console.log("Error sending confirmation email");
       }
-      
+
       connection.query(`update transactions set amount = ${connection.escape(amount)} where paymentid = ${connection.escape(paymentId)}`);
 
       amount *= 100; // convert back into cents format for database. 
@@ -833,7 +854,7 @@ app.post("/api/submitComment", async (req, res) => {
     console.log(paymentId);
 
     const paymentIntent = await stripe.paymentIntents.retrieve(req.body.paymentId);
-    
+
     if (paymentIntent.status !== 'succeeded') {
       console.log(paymentIntent.status);
       return res.sendStatus(400);
@@ -843,24 +864,24 @@ app.post("/api/submitComment", async (req, res) => {
     // Check comment length
     let name = req.body.name || "Anonymous";
     let comment = req.body.message;
-    console.log("Original comment"+ comment);
+    console.log("Original comment" + comment);
     /*if (comment.length > 250) {
       console.log("Comment too long. Should return 400.");
       return res.sendStatus(400); // Return 400 if comment is too long
     }*/
-    
+
     // Escape HTML to prevent XSS //NOT CURRENTLY DOING THINGS B/C the escape function is off rn
     comment = escapeHtml(comment);
     name = escapeHtml(name);
 
-    if(comment.length >= 300){
+    if (comment.length >= 300) {
       comment = comment.substring(0, 300);
     }
-    if(name.length>= 32){
+    if (name.length >= 32) {
       name = name.substring(0, 32);
     }
-    
-    console.log("cleaned? comment"+ comment);
+
+    console.log("cleaned? comment" + comment);
 
     // Construct SQL query
     const query = `
@@ -929,30 +950,30 @@ app.post('/account_session', async (req, res) => {
   }
 });
 
-async function sendConfirmationEmail(amount, ccName, ccEmail, totaltip, ccProcessingFee, fundId,date, tipHidden){
+async function sendConfirmationEmail(amount, ccName, ccEmail, totaltip, ccProcessingFee, fundId, date, tipHidden) {
 
   console.log("Email sending called!!!!!!!!!!!!!!!!!!!!!")
   let campaignDetails = await connectSQL(fundId);
   let fundName = campaignDetails[0].camName;
   var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-  let potentialCommentOut = ""; 
-  let potentialCommentOut2 = ""; 
+  let potentialCommentOut = "";
+  let potentialCommentOut2 = "";
 
-  if(tipHidden == 1){
+  if (tipHidden == 1) {
     potentialCommentOut = "<!--";
     potentialCommentOut2 = "-->";
   }
 
   sendSmtpEmail = {
-      to: [{
-          email: `${ccEmail}`,
-          name: `${ccName}`
-      }],
-      sender: {
-          name: 'Bowie Fundraising',
-          email: 'chenarthur41@gmail.com'
-      },
-      htmlContent: `<!DOCTYPE html>
+    to: [{
+      email: `${ccEmail}`,
+      name: `${ccName}`
+    }],
+    sender: {
+      name: 'Bowie Fundraising',
+      email: 'chenarthur41@gmail.com'
+    },
+    htmlContent: `<!DOCTYPE html>
 <html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" lang="en">
 
 <head>
@@ -1143,22 +1164,22 @@ async function sendConfirmationEmail(amount, ccName, ccEmail, totaltip, ccProces
                               <div style="margin-left:-20px">
                                 <ul style="margin-top: 0; margin-bottom: 0; list-style-type: revert;">
                                   <li style="Margin: 0 0 9px 0;">You donated ${Intl.NumberFormat('en-US', {
-                                    style: 'currency',
-                                    currency: 'USD',
-                                }).format(parseInt(amount*100)/100 + parseInt(totaltip*100)/100 + parseInt(ccProcessingFee*100)/100)} on ${date.toLocaleDateString("en-US", options)}&nbsp;<div style="margin-left:-10px">
+      style: 'currency',
+      currency: 'USD',
+    }).format(parseInt(amount * 100) / 100 + parseInt(totaltip * 100) / 100 + parseInt(ccProcessingFee * 100) / 100)} on ${date.toLocaleDateString("en-US", options)}&nbsp;<div style="margin-left:-10px">
                                       <ul style="margin-top: 0; margin-bottom: 0; list-style-type: revert;">
                                         <li style="Margin: 9px 0 9px 0;">Your donation was ${Intl.NumberFormat('en-US', {
-                                          style: 'currency',
-                                          currency: 'USD',
-                                      }).format(parseInt(amount*100)/100)}</li>
+      style: 'currency',
+      currency: 'USD',
+    }).format(parseInt(amount * 100) / 100)}</li>
                                         <li style="Margin: 0 0 9px 0;">You donated ${Intl.NumberFormat('en-US', {
-                                          style: 'currency',
-                                          currency: 'USD',
-                                      }).format(parseInt(ccProcessingFee*100)/100)} to cover credit card processing fees</li>
-                                        `+potentialCommentOut+`<li style="Margin: 0 0 9px 0;">You tipped ${Intl.NumberFormat('en-US', {
-                                          style: 'currency',
-                                          currency: 'USD',
-                                      }).format(parseInt(totaltip*100)/100)} to support the student developer ❤️</li>`+potentialCommentOut2+`
+      style: 'currency',
+      currency: 'USD',
+    }).format(parseInt(ccProcessingFee * 100) / 100)} to cover credit card processing fees</li>
+                                        `+ potentialCommentOut + `<li style="Margin: 0 0 9px 0;">You tipped ${Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(parseInt(totaltip * 100) / 100)} to support the student developer ❤️</li>` + potentialCommentOut2 + `
                                       </ul>
                                     </div>
                                   </li>
@@ -1261,16 +1282,16 @@ async function sendConfirmationEmail(amount, ccName, ccEmail, totaltip, ccProces
 </body>
 
 </html>`,
-      subject: 'Your Donation Receipt',
-      headers: {
-          'X-Mailin-custom': 'custom_header_1:custom_value_1|custom_header_2:custom_value_2'
-      }
+    subject: 'Your Donation Receipt',
+    headers: {
+      'X-Mailin-custom': 'custom_header_1:custom_value_1|custom_header_2:custom_value_2'
+    }
   };
-  
-  
-  apiInstance.sendTransacEmail(sendSmtpEmail).then(function(data) {
+
+
+  apiInstance.sendTransacEmail(sendSmtpEmail).then(function (data) {
     console.log('API called successfully. Returned data: ' + JSON.stringify(data));
-  }, function(error) {
+  }, function (error) {
     console.error(error);
   });
 }
