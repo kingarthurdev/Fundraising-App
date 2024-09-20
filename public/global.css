@@ -1,0 +1,9 @@
+*{
+    font-family: 'Inter', Helvetica, Arial, sans-serif; /* This doesn't do inter rn...*/
+}
+:root {
+    --primary-color: rgb(41, 51, 92);
+    --secondary-color: rgb(93, 162, 113);
+    --highlight: #ffbf02;
+    overflow-x: hidden;
+  }

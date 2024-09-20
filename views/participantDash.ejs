@@ -1,2 +1,88 @@
 <!DOCTYPE html>
-<h1>hallo</h1>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <link rel="stylesheet" href="/global.css" />
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+        rel="stylesheet">
+
+    <style>
+        .topbar {
+            position: relative;
+            top: 0;
+            background-color: red;
+            padding: 10px;
+            width: 100%;
+        }
+
+        .topbar h1 {
+            padding: 0px;
+            margin: 0px;
+        }
+
+        body {
+            padding: 0px;
+            margin: 0px;
+        }
+
+        .cardHolder {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .card {
+            width: 100%;
+            height: 100px;
+            background-color: red;
+            margin: 30px;
+            padding:20px;
+        }
+
+        @media (max-width: 800px) {
+            .cardHolder{
+                flex-direction: column;
+            }
+            .card{
+                width:90%;
+            }
+        }
+        .card h2{
+            margin-top:0px;
+            padding-top: 0;
+        }
+    </style>
+</head>
+
+<body>
+    <!--<header class="topbar">
+        <h1>Fundraiser Dashboard</h1>
+    </header> -->
+    <center>
+        <h1 class="">Your Fundraiser Dashboard</h1>
+    </center>
+    <div class="cardHolder">
+        <div class="card">
+            <h2>Your Fundraising Progress</h2>
+        </div>
+        <div class="card">
+
+        </div>
+    </div>
+
+
+    <h1>Welcome <%= id %>!</h1>
+
+
+    <h1>Welcome <%= name %>!</h1>
+
+
+    <h1>Welcome <%= email %>!</h1>
+
+</body>
+
+</html>

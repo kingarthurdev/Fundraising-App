@@ -3,9 +3,10 @@ const myParam = urlParams.get('id');
 const sourceId = urlParams.get('sourceId');
 
 updateNames(sourceId);
+handleSubmit(true);
 
 document.querySelector('#fundLink').href = "/fund/" + sourceId;
-document.querySelector("#submit").addEventListener("click", handleSubmit);
+document.querySelector("#submit").addEventListener("click", ()=>{handleSubmit(false)});
 
 async function updateNames(sourceId) {
   let camInfo = await (await fetch("/api/getCamInfo?id=" + sourceId)).json();
@@ -13,7 +14,7 @@ async function updateNames(sourceId) {
   document.querySelector("#fundName").innerHTML = await camInfo.camName;
   document.querySelector("#fundLogo").href = await camInfo.camImage; 
 }
-async function handleSubmit() {
+async function handleSubmit(staySamePage) {
   let name = document.querySelector("#name").value;
   let message = document.querySelector("#message").value;
   let paymentId = myParam;
@@ -38,7 +39,8 @@ async function handleSubmit() {
       if (!response.ok) {
         throw new Error("Network response was not ok " + response.statusText);
       } else {
-        window.location.href = "/fund/" + sourceId + "?share=true";
+        if(!staySamePage)
+          window.location.href = "/fund/" + sourceId + "?share=true";
       }
       return response.json();  // Parse the JSON response
     })

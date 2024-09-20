@@ -920,8 +920,8 @@ app.post("/api/submitComment", async (req, res) => {
         console.error("Error executing query:", error);
         return res.sendStatus(500);
       }
-
-      console.log("Comment updated successfully:", result);
+      
+      console.log("Comment updated successfully:", result, "   Here is the query: ", query);
       return res.sendStatus(200);
     });
 

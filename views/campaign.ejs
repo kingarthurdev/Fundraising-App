@@ -9,6 +9,8 @@
 
     <link href="/campaign.css" rel="stylesheet">
     <link rel="icon" href="<%=camImage%>" type="image/icon type">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
     <style>
@@ -329,9 +331,9 @@
                                 </div>
                                 <progress class="progress progress1" max="100" value="5"></progress>
                                 <div class="amounts">
-                                    <h3>$<%=parseInt(camFunds /100)%> Raised</h3>
+                                    <h3>$<%=Intl.NumberFormat('en-US').format(parseInt(camFunds /100))%> Raised</h3>
                                     <h3>
-                                        <%=parseInt(camFunds /dollarGoal)%>% of $<%=dollarGoal%> Goal
+                                        <%=Intl.NumberFormat('en-US').format(parseInt(camFunds /dollarGoal))%>% of $<%=Intl.NumberFormat('en-US').format(dollarGoal)%> Goal
                                     </h3>
                                 </div>
                                 <a href="/checkout/<%=fundId %>"><button class="bigdonate"
@@ -529,7 +531,7 @@
                     throw new Error(`Response status: ${response.status}`);
                 }
                 const json = await response.json();
-                if (json.length < 6) {
+                if (json.length == 0) {
                     //toggle the no comments yet thinggy ONLY IF THERE WERE NO TOTAL COMMENTS!!!!!
                     //for now, will just hide button...
                     document.querySelector("#loadmore").style.display = "none";
@@ -538,7 +540,7 @@
                         var htmlContent =
                             `<div class="donorcard">
                         <div class="donorName">
-                            ${escapeHtml(json[i].commentName)} donated $${json[i].amount}
+                            ${escapeHtml(json[i].commentName)} donated $${Intl.NumberFormat('en-US').format(json[i].amount)}
                         </div>
                         <div class="supportingDate">
                             ${json[i].supporting ? "Supporting " + escapeHtml(json[i].supporting) + " | " : ""}<span id="time">${timeAgo(json[i].date)}</span>
