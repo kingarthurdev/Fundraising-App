@@ -529,7 +529,7 @@
                     throw new Error(`Response status: ${response.status}`);
                 }
                 const json = await response.json();
-                if (json.length == 0) {
+                if (json.length < 6) {
                     //toggle the no comments yet thinggy ONLY IF THERE WERE NO TOTAL COMMENTS!!!!!
                     //for now, will just hide button...
                     document.querySelector("#loadmore").style.display = "none";
