@@ -331,7 +331,7 @@ function showMessage(messageText, green) {
   setTimeout(function () {
     messageContainer.classList.add("hidden");
     messageContainer.textContent = "";
-  }, 4000);
+  }, 5000);
 }
 
 // Show a spinner on payment submission

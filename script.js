@@ -261,7 +261,9 @@ app.post("/update-payment-intent", async (req, res) => {
     if (customer) {
       console.log("here is what I will be submitting: amount:" + totalint + ", application fee amount is "+ parseInt(req.body.totaltip * 100)+", this goes through");
       try{
+        console.log("Here is donebefore: "+ doneBefore)
         if(doneBefore != 1){
+          console.log("doing update with cust info because doneBefore is false.")
           let paymentIntent = await stripe.paymentIntents.update(
             req.body.PI,
             {
