@@ -32,29 +32,63 @@
         .cardHolder {
             display: flex;
             justify-content: center;
-            align-items: center;
         }
 
         .card {
             width: 100%;
-            height: 100px;
-            background-color: red;
+            min-height: 10px;
+            background-color: white;
             margin: 30px;
-            padding:20px;
+            padding: 35px;
+            border-radius: 6px;
+            margin-top:5px;
+            border-style:solid;
+            border-width:1px;
         }
 
-        @media (max-width: 800px) {
-            .cardHolder{
+        progress {
+            accent-color: rgb(28, 16, 85);
+            -webkit-appearence: none;
+        }
+
+
+        @media (max-width: 950px) {
+            .cardHolder {
                 flex-direction: column;
+                align-items: center;
+                margin: 20px;
             }
-            .card{
-                width:90%;
+
+            .card {
+                max-width: 600px;
+                width: 100%;
             }
         }
-        .card h2{
-            margin-top:0px;
+
+        .card h2 {
+            margin-top: 0px;
             padding-top: 0;
         }
+
+        .progress {
+            width: 100%;
+            height: 2rem;
+        }
+        #amountsContainer *{
+            display:inline;
+        }
+        #amountsContainer p{
+            font-weight: 600;
+            font-size:1.2rem;
+            margin-left:3px;
+        }
+        #wayThere{
+            margin:0px;
+            margin-top: 3px;
+        }
+    
+
+
     </style>
 </head>
 
@@ -68,20 +102,27 @@
     <div class="cardHolder">
         <div class="card">
             <h2>Your Fundraising Progress</h2>
+
+            <div id="amountsContainer">
+                <h1>$<span id=amount>750</span></h1><p> raised of $<span id="goal">1000</span> goal</p>
+            </div>
+            <progress class="progress" max="100" value="75"></progress>
+            <p id="wayThere">You're <span id="percent">75</span>% of the way there!</p>
+
         </div>
         <div class="card">
-
+            <h2>Raise More Funds</h2>
         </div>
     </div>
 
-
+<!--
     <h1>Welcome <%= id %>!</h1>
 
 
     <h1>Welcome <%= name %>!</h1>
 
 
-    <h1>Welcome <%= email %>!</h1>
+    <h1>Welcome <%= email %>!</h1>-->
 
 </body>
 

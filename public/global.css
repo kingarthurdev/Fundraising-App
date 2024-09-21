@@ -1,5 +1,6 @@
 *{
-    font-family: 'Inter', Helvetica, Arial, sans-serif; /* This doesn't do inter rn...*/
+    font-family: 'Inter', Helvetica, Arial, sans-serif; /* This needs the google link to that font for inter to work*/
+    box-sizing: border-box;
 }
 :root {
     --primary-color: rgb(41, 51, 92);

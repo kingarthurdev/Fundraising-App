@@ -220,19 +220,24 @@ app.post("/create-payment-intent", async (req, res) => {
 
 
 //updates amount to be paid when the person submits the form 
+//todo: make better by properly listening to responses from stripe api, then responding accordingly instead of brute forcing.
 app.post("/update-payment-intent", async (req, res) => {
 
   let customer;
   let name = req.body.custName + "";
   let email = req.body.custEmail + "";
+  let doneBefore = parseInt(req.body.doneBefore);  // a 1 will indicate that this isn't the first update, thus will prevent the customer attribute. 
 
   try {
     try {
-      customer = await stripe.customers.create({
-        name: name,
-        email: email,
-      });
-      console.log("New customer, here is the name and email: " + req.body.custName + " : " + req.body.custEmail);
+      if(doneBefore != 1){
+        customer = await stripe.customers.create({
+          name: name,
+          email: email,
+        });
+        console.log("New customer, here is the name and email: " + req.body.custName + " : " + req.body.custEmail);
+      }
+      
     } catch {
       console.log("Customer creation failed. Possibly because they already exist. Ignoring for now...")
     }
@@ -254,25 +259,44 @@ app.post("/update-payment-intent", async (req, res) => {
     let totalint = cleanDonation;
 
     if (customer) {
-      console.log("here is what I will be submitting: amount:" + totalint + ", application fee amount is 1000 as default, this goes through, but then I send another update that tries to send the actual application fee amount which is this: " + parseInt(req.body.totaltip * 100));
+      console.log("here is what I will be submitting: amount:" + totalint + ", application fee amount is "+ parseInt(req.body.totaltip * 100)+", this goes through");
       try{
-        let paymentIntent = await stripe.paymentIntents.update(
-          req.body.PI,
-          {
-            amount: totalint,
-            application_fee_amount: 0,
-            customer: customer.id,
-          }
-        );
-        // duplicate stuff incase of errors? // honestly idk what the point of this is, but past me put it here... 
-        paymentIntent = await stripe.paymentIntents.update(
-          req.body.PI,
-          {
-            amount: totalint,
-            application_fee_amount: parseInt(req.body.totaltip * 100),
-            customer: customer.id,
-          }
-        );
+        if(doneBefore != 1){
+          let paymentIntent = await stripe.paymentIntents.update(
+            req.body.PI,
+            {
+              amount: totalint,
+              application_fee_amount: 0,
+              customer: customer.id,
+            }
+          );
+          // duplicate stuff incase of errors? // honestly idk what the point of this is, but past me put it here... 
+          paymentIntent = await stripe.paymentIntents.update(
+            req.body.PI,
+            {
+              amount: totalint,
+              application_fee_amount: parseInt(req.body.totaltip * 100),
+              customer: customer.id,
+            }
+          );
+        }else{
+          let paymentIntent = await stripe.paymentIntents.update(
+            req.body.PI,
+            {
+              amount: totalint,
+              application_fee_amount: 0,
+            }
+          );
+          // duplicate stuff incase of errors? // honestly idk what the point of this is, but past me put it here... 
+          paymentIntent = await stripe.paymentIntents.update(
+            req.body.PI,
+            {
+              amount: totalint,
+              application_fee_amount: parseInt(req.body.totaltip * 100),
+            }
+          );
+        }
+        
       }catch(e){
         console.log(e);
         let paymentIntent = await stripe.paymentIntents.update(
@@ -324,8 +348,6 @@ app.post("/update-payment-intent", async (req, res) => {
 });
 
 app.post("/verify-payment", async (req, res) => {
-
-
   getTransaction(req.body.id).then((response) => {
     if (response == null || response == undefined) {
       console.log("Transaction not found");

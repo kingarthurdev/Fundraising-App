@@ -536,6 +536,9 @@
                     //for now, will just hide button...
                     document.querySelector("#loadmore").style.display = "none";
                 } else {
+                    if(json.length <6 ){
+                        document.querySelector("#loadmore").style.display = "none";
+                    }
                     for (var i = 0; i < json.length; i++) {
                         var htmlContent =
                             `<div class="donorcard">

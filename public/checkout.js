@@ -13,6 +13,7 @@ let tipHidden = 1; // hides tipping option, 0 = unhidden, 1 = hidden
 //default donation amounts
 let donationAmount = 100; //$100
 let processing = .04; //4%
+let doneBefore =0; 
 
 let tip = .15;  //15% tip
 if(tipHidden == 1){
@@ -209,10 +210,14 @@ async function handleSubmit(e) {
   const updatedIntent = await fetch("/update-payment-intent", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ totaldonation, PI: globalPaymentIntent, totaltip, custName, custEmail }),   //NOTE THIS IS NOT THE ORIGIONAL VAR DONATION AMOUNT, IT'S ACTUALLY TOTAL AMOUNT 
+    body: JSON.stringify({ totaldonation, PI: globalPaymentIntent, totaltip, custName, custEmail, doneBefore }),   //NOTE THIS IS NOT THE ORIGIONAL VAR DONATION AMOUNT, IT'S ACTUALLY TOTAL AMOUNT 
   });
+  doneBefore = 1;
 
-  //currently only way to implement this... 
+  if(updatedIntent.status != 200){
+    showMessage("Something went wrong. Please reload the page to try again. If the issue persists, please call support.");
+  }else{
+      //currently only way to implement this... 
 
   const { error } = await stripe.confirmPayment({
     elements,
@@ -249,6 +254,8 @@ async function handleSubmit(e) {
       showMessage("Something went wrong.");
       break;
   }
+  }
+
 
   /*
   console.log(elements);
