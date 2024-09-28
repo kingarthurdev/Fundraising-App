@@ -138,9 +138,9 @@
 
         document.getElementById("login").addEventListener("click", function () {
             console.log(document.getElementById("email").value);
-            console.log(document.getElementById("pass").value);
+            console.log(document.getElementById("password").value);
 
-            let data = { "email": document.getElementById("email").value, "password": document.getElementById("pass").value };
+            let data = { "email": document.getElementById("email").value, "password": document.getElementById("password").value };
 
             const response = fetch("/api/auth", {
                 method: "POST", // *GET, POST, PUT, DELETE, etc.

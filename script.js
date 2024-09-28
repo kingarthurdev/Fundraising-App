@@ -623,7 +623,7 @@ app.post("/api/auth", async (req, res) => {
     const token = jwt.sign({ userId: result }, process.env.JWT_SECRET_KEY, {
       expiresIn: '2h',
     });
-    res.setHeader('Set-Cookie', `authentication=${token}; Secure; Path=/; Max-Age=99999; SameSite=strict;`); //sets cookie
+    res.setHeader('Set-Cookie', `authentication=${token}; Secure; HttpOnly; Path=/; Max-Age=99999; SameSite=strict;`); //sets cookie
     res.status(200).send("Authentication Succeeded.");
   }).catch(
     err => {
@@ -665,7 +665,7 @@ app.get("/dashboard", async (req, res) => {
   //const token = req.header('Authorization');
   const token = req.cookies.authentication;
   if (!token) {
-    return res.redirect("/login")
+    return res.redirect("/signin")
   } else {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);  // important that you use jwt.verify not jwt.decode, decode doesn't verify! 
@@ -691,7 +691,7 @@ app.get("/dashboard", async (req, res) => {
       })
     } catch (error) {
       console.log("Dashboard error: ", error);
-      return res.redirect("/login")
+      return res.redirect("/signin")
     }
   }
 })
@@ -753,10 +753,10 @@ app.post("/createcampaign", async (req, res2) => {
 
     } catch (error) {
       console.log(error);
-      return res.redirect("/login")
+      return res.redirect("/signin")
     }
   } else {
-    return res.redirect("/login");
+    return res.redirect("/signin");
   }
 
 
@@ -841,16 +841,16 @@ app.post("/joinCampaign", async (req, res) => {
           console.log("Joined campaign!")
         }
       } else {
-        console.log("No userid found. Redirecting to login.")
-        return res.redirect("/login");
+        console.log("No userid found. Redirecting to signin.")
+        return res.redirect("/signin");
       }
     } catch (error) {
-      console.log(error + " was the error, redirecting to login.");
-      return res.redirect("/login")
+      console.log(error + " was the error, redirecting to signin.");
+      return res.redirect("/signin")
     }
   } else {
-    console.log("No authorization, redirecting to login. ")
-    return res.redirect("/login");
+    console.log("No authorization, redirecting to signin. ")
+    return res.redirect("/signin");
   }
 });
 
