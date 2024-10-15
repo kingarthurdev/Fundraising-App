@@ -104,14 +104,16 @@
             <h2>Your Fundraising Progress</h2>
 
             <div id="amountsContainer">
-                <h1>$<span id=amount>750</span></h1><p> raised of $<span id="goal">1000</span> goal</p>
+                <h1>$<span id=amount><%= parseInt(fundsRaised/100)%></span></h1><p> raised of $<span id="goal"><%=memberGoal%></span> goal</p>
             </div>
-            <progress class="progress" max="100" value="75"></progress>
-            <p id="wayThere">You're <span id="percent">75</span>% of the way there!</p>
+            <progress class="progress" max="100" value="<%= parseInt((fundsRaised/100)/memberGoal) %>"></progress>
+            <p id="wayThere">You're <span id="percent"><%= parseInt((fundsRaised/100)/memberGoal) %></span>% of the way there<%= parseInt((fundsRaised/100)/memberGoal)>= 10 ? "!" : ""%></p>
 
         </div>
         <div class="card">
             <h2>Raise More Funds</h2>
+            <button>Copy Fundraiser Link</button>
+            <button>Share on Social Media</button>
         </div>
     </div>
 

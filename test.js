@@ -1,3 +1,72 @@
+
+const XLSX = require('xlsx');
+const workbook = XLSX.readFile('Functional Security Requirement Checklist_Feature 1.xlsx');
+const sheet_name_list = workbook.SheetNames;
+
+let json = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]])
+let prior = -1;
+let data = {};
+
+/*
+
+new gameplan: 
+isolate last digit, using first segment before last digit as the key
+if the first segment has never been seen before, then the first item becomes the parent, all following with the same first segment become children
+
+
+*/
+for (i = 0; i < json.length; i++) {
+	let stringThing = json[i].__EMPTY_1 + ""; // full name
+	let newString = stringThing.split("-")[stringThing.split("-").length-1] + "";  //total number, including any children decimals
+	let childNumbers = newString.split("."); // child number, last decimal num
+	let childNumber = "";
+
+	if(childNumbers.length>1){
+		childNumber = childNumbers[childNumbers.length-1];
+	}
+
+	
+
+	let key = stringThing.substring(0, stringThing.length - childNumber.length);
+
+	if(!data[key]){
+		data[key] = {
+			"data":json[i],
+			"children":[],
+		};
+	}else{
+		data[key].children.push(json[i]);
+	}
+}
+
+console.log(data["FSA-S-IAC-5."]);
+/*
+
+for (i = 0; i < json.length; i++) {
+	let stringThing = json[i].__EMPTY_1 + "";
+	let newString = stringThing.split("-")[3] + "";  //total number, including any children decimals
+	let parent = newString.split(".")[0]; //parent number
+
+
+	if(!data[stringThing] && newString.split(".").length == 1){
+		data[stringThing] = {
+			"data":json[i],
+			"children":[],
+		};
+	}
+	
+	//if (parent == prior && newString.split(".").length > 1) {
+	//	data[stringThing].children.push(json[i]);
+	//}
+	//prior = parent;
+	//format: name, obj containing data, then data of all children
+
+}*/
+Object.keys(data).forEach(key => {
+    //console.log(key, data[key].children); // Access key and value
+});
+
+/*
 var SibApiV3Sdk = require('sib-api-v3-sdk');
 var defaultClient = SibApiV3Sdk.ApiClient.instance;
 
@@ -12,18 +81,18 @@ var sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail(); // SendSmtpEmail | Values t
 
 
 function sendConfirmationEmail(amount, ccName, ccEmail, totaltip, ccProcessingFee, fundId,date){
-    let fundName; 
+	let fundName; 
 
-    sendSmtpEmail = {
-        to: [{
-            email: `${ccEmail}`,
-            name: `${ccName}`
-        }],
-        sender: {
-            name: 'Bowie Fundraising',
-            email: 'chenarthur41@gmail.com'
-        },
-        htmlContent: `<!DOCTYPE html>
+	sendSmtpEmail = {
+		to: [{
+			email: `${ccEmail}`,
+			name: `${ccName}`
+		}],
+		sender: {
+			name: 'Bowie Fundraising',
+			email: 'chenarthur41@gmail.com'
+		},
+		htmlContent: `<!DOCTYPE html>
 <html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" lang="en">
 
 <head>
@@ -320,25 +389,25 @@ function sendConfirmationEmail(amount, ccName, ccEmail, totaltip, ccProcessingFe
 </body>
 
 </html>`,
-        subject: 'Your Donation Receipt',
-        headers: {
-            'X-Mailin-custom': 'custom_header_1:custom_value_1|custom_header_2:custom_value_2'
-        }
-    };
+		subject: 'Your Donation Receipt',
+		headers: {
+			'X-Mailin-custom': 'custom_header_1:custom_value_1|custom_header_2:custom_value_2'
+		}
+	};
     
     
-    apiInstance.sendTransacEmail(sendSmtpEmail).then(function(data) {
-      console.log('API called successfully. Returned data: ' + JSON.stringify(data));
-    }, function(error) {
-      console.error(error);
-    });
+	apiInstance.sendTransacEmail(sendSmtpEmail).then(function(data) {
+	  console.log('API called successfully. Returned data: ' + JSON.stringify(data));
+	}, function(error) {
+	  console.error(error);
+	});
 }
 
 sendConfirmationEmail(100, "joe", "spamsignupacc136@gmail.com", 101, 102, 1, "jan 1st, 2001");
 
 
 
-
+*/
 
 
 
@@ -365,11 +434,11 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
   const mg = mailgun.client({username: 'api', key: process.env.MAILGUN_API_KEY || 'key-yourkeyhere'});
   
   mg.messages.create('sandbox-123.mailgun.org', {
-        from: "Excited User <mailgun@sandbox2f72ff70678b4787ac5130f133adc63c.mailgun.org>",
-        to: ["test@example.com"],
-        subject: "Hello",
-        text: "Testing some Mailgun awesomeness!",
-        html: "<h1>Testing some Mailgun awesomeness!</h1>"
+		from: "Excited User <mailgun@sandbox2f72ff70678b4787ac5130f133adc63c.mailgun.org>",
+		to: ["test@example.com"],
+		subject: "Hello",
+		text: "Testing some Mailgun awesomeness!",
+		html: "<h1>Testing some Mailgun awesomeness!</h1>"
   })
   .then(msg => console.log(msg)) // logs response data
   .catch(err => console.log(err)); // logs any error
@@ -377,54 +446,54 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 
 async function a() {
-    /*const account = await stripe.accounts.create({
-        type: 'express',
-        country: 'US',
-        email: 'jenny.rosen@example.com',
-        capabilities: {
-          card_payments: {
-            requested: true,
-          },
-          transfers: {
-            requested: true,
-          },
-        },
-      });
-      console.log(account);
+	/*const account = await stripe.accounts.create({
+		type: 'express',
+		country: 'US',
+		email: 'jenny.rosen@example.com',
+		capabilities: {
+		  card_payments: {
+			requested: true,
+		  },
+		  transfers: {
+			requested: true,
+		  },
+		},
+	  });
+	  console.log(account);
 
-      const accountLink = await stripe.accountLinks.create({
-        account: 'acct_1P2z5VB4t7JHWBgS',
-        refresh_url: 'https://example.com/reauth',
-        return_url: 'https://example.com/return',
-        type: 'account_onboarding',
-      });
-      console.log(accountLink);*/
+	  const accountLink = await stripe.accountLinks.create({
+		account: 'acct_1P2z5VB4t7JHWBgS',
+		refresh_url: 'https://example.com/reauth',
+		return_url: 'https://example.com/return',
+		type: 'account_onboarding',
+	  });
+	  console.log(accountLink);*/
 
 
-    let accountid = 'acct_1P2z5VB4t7JHWBgS';
+	let accountid = 'acct_1P2z5VB4t7JHWBgS';
 
-    /*
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: 100,
-      currency: "usd",
-      // In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
-      automatic_payment_methods: {
-        enabled: true,
-      },
-      transfer_data: {destination: accountid},
-      application_fee_amount:0,
-    });
-    console.log(paymentIntent);
-    */
+	/*
+	const paymentIntent = await stripe.paymentIntents.create({
+	  amount: 100,
+	  currency: "usd",
+	  // In the latest version of the API, specifying the `automatic_payment_methods` parameter is optional because Stripe enables its functionality by default.
+	  automatic_payment_methods: {
+		enabled: true,
+	  },
+	  transfer_data: {destination: accountid},
+	  application_fee_amount:0,
+	});
+	console.log(paymentIntent);
+	*/
 
-    const paymentIntent2 = await stripe.paymentIntents.update(
-        'pi_3PEBSFBZCoGd2paD1VWwiWoe',
-        {
-            amount: 500,
-            application_fee_amount: 100,
-        }
-    );
-    console.log(paymentIntent2);
+	const paymentIntent2 = await stripe.paymentIntents.update(
+		'pi_3PEBSFBZCoGd2paD1VWwiWoe',
+		{
+			amount: 500,
+			application_fee_amount: 100,
+		}
+	);
+	console.log(paymentIntent2);
 }
 
 //a();
@@ -436,27 +505,27 @@ async function a() {
 
 //TO-DO: make sure that the names of each fundraiser are in proper format (first letter of each word except certain ones are capitalized. )
 /*const connection = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: process.env.DB_PASSWORD,
-    database: 'fundraisers'
+	host: 'localhost',
+	user: 'root',
+	password: process.env.DB_PASSWORD,
+	database: 'fundraisers'
 });
 
 let fundId = 1;
 let startIndex = 0; // the index of the first comment, goes to that + 6 if possible
 let numResults = 6;
 connection.query(`Select comment,date,amount,commentName from transactions where fundraiserid = ${connection.escape(fundId)} and rownum >= ${connection.escape(startIndex)} LIMIT ${numResults};`, (err, results) => {
-    if (err) {
-        console.log(err);
-    } else {
-        console.log(results);
-    }
+	if (err) {
+		console.log(err);
+	} else {
+		console.log(results);
+	}
 });*/
 
 /*
 let a = '9999 or 1 = 1; -- '
 connection.query(`select * from campaigns where id = ${mysql.escape(a)}`, (err, res)=>{
-    console.log(res, err);
+	console.log(res, err);
 });
 
 
@@ -464,92 +533,92 @@ connection.query(`select * from campaigns where id = ${mysql.escape(a)}`, (err, 
 
 app.post("/verify-payment", async (req, res) => {
 
-    getTransaction(req.body.id).then((response) => {
-        if (response == null || response == undefined) {
-            console.log("Transaction not found");
-            return res.status(403).json("Invalid transaction"); // need to do a promise of some sort to return out of arrow function
-        } else {
-            try {
-                if (response.succeeded != 1) {
-                    stripe.paymentIntents.retrieve(response[0].paymentid).then(paymentIntent => {
-                        if (paymentIntent.status === 'succeeded') {
-                            connection.query(`select succeeded from transactions where paymentid = ${connection.escape(req.body.id)}`, (error, response) => {
-                                if (JSON.stringify(response[0].succeeded) == "null" || JSON.stringify(response[0].succeeded) == 0) {
-                                    // process to begin updating transactions to process new funds 
-                                    updateFunds(req.body.fundId, req.body.id).then(res=>{
-                                        res.status(200).json({ message: res });
-                                    }).catch(err=>{
-                                        res.status(400).json({ error: err });
-                                    })
-                                }
-                            });
-                        } else {
-                            res.status(400).json({ error: 'Payment Failed' });
-                        }
+	getTransaction(req.body.id).then((response) => {
+		if (response == null || response == undefined) {
+			console.log("Transaction not found");
+			return res.status(403).json("Invalid transaction"); // need to do a promise of some sort to return out of arrow function
+		} else {
+			try {
+				if (response.succeeded != 1) {
+					stripe.paymentIntents.retrieve(response[0].paymentid).then(paymentIntent => {
+						if (paymentIntent.status === 'succeeded') {
+							connection.query(`select succeeded from transactions where paymentid = ${connection.escape(req.body.id)}`, (error, response) => {
+								if (JSON.stringify(response[0].succeeded) == "null" || JSON.stringify(response[0].succeeded) == 0) {
+									// process to begin updating transactions to process new funds 
+									updateFunds(req.body.fundId, req.body.id).then(res=>{
+										res.status(200).json({ message: res });
+									}).catch(err=>{
+										res.status(400).json({ error: err });
+									})
+								}
+							});
+						} else {
+							res.status(400).json({ error: 'Payment Failed' });
+						}
 
-                    });
-                } else {
-                    return res.status(403).json("Transaction failed.");
-                }
-            } catch {
-                res.status(414); // idk what this status is, just here to prevent program from shitting itself when an error occurs
-            }
-        }
-    }).catch((err) => {
-        console.error(error);
-        res.status(500).json({ error: 'Server error' });
-    })
+					});
+				} else {
+					return res.status(403).json("Transaction failed.");
+				}
+			} catch {
+				res.status(414); // idk what this status is, just here to prevent program from shitting itself when an error occurs
+			}
+		}
+	}).catch((err) => {
+		console.error(error);
+		res.status(500).json({ error: 'Server error' });
+	})
 
 });
 
 
 async function getTransaction(paymentId) {
-    return new Promise((resolve, reject) => {
-        connection.query(`select * from transactions where paymentid = ${connection.escape(paymentId)}`, (err, response) => {
-            if (err) {
-                reject(err);
-            }
-            resolve(response);
-        });
-    });
+	return new Promise((resolve, reject) => {
+		connection.query(`select * from transactions where paymentid = ${connection.escape(paymentId)}`, (err, response) => {
+			if (err) {
+				reject(err);
+			}
+			resolve(response);
+		});
+	});
 }
 async function updateFunds(fundId, paymentId) {
-    return new Promise((resolve, reject) => {
-        try {
-            connection.query(`update transactions set succeeded = 1 where paymentid = ${connection.escape(paymentId)}`);
-            let amount = paymentIntent.amount_received;
-            connection.query(`select camFunds from campaigns where id = ${mysql.escape(fundId)}`, (error, response) => {
-                if (error) {
-                    console.log("SQL Error: " , error);
-                } else {
-                    try {
-                        let newAmount = response[0].camFunds + amount;
-                        connection.query(`UPDATE campaigns SET camFunds = ${mysql.escape(newAmount)} WHERE id = ${mysql.escape(fundId)};`, (e, r) => {
-                            if (e) {
-                                console.log(e, " is error to update campaign fund");
-                            }else{
-                                resolve("Updated Successfully!");
-                            }
-                        })
-                    } catch {
-                        reject("SQL Error. Fund Update Failed.")
-                    }
-                }
+	return new Promise((resolve, reject) => {
+		try {
+			connection.query(`update transactions set succeeded = 1 where paymentid = ${connection.escape(paymentId)}`);
+			let amount = paymentIntent.amount_received;
+			connection.query(`select camFunds from campaigns where id = ${mysql.escape(fundId)}`, (error, response) => {
+				if (error) {
+					console.log("SQL Error: " , error);
+				} else {
+					try {
+						let newAmount = response[0].camFunds + amount;
+						connection.query(`UPDATE campaigns SET camFunds = ${mysql.escape(newAmount)} WHERE id = ${mysql.escape(fundId)};`, (e, r) => {
+							if (e) {
+								console.log(e, " is error to update campaign fund");
+							}else{
+								resolve("Updated Successfully!");
+							}
+						})
+					} catch {
+						reject("SQL Error. Fund Update Failed.")
+					}
+				}
 
-            })
-        } catch {
-            reject("Fund Update Failed");
-        }
-    })
+			})
+		} catch {
+			reject("Fund Update Failed");
+		}
+	})
 }
 
 (async () => {
-    try {
-        const transaction = await getTransaction("pi_3OtCDgBZCoGd2paD11NeGX94");
-        console.log(transaction[0]);
-    } catch (error) {
-        console.error(error);
-    }
+	try {
+		const transaction = await getTransaction("pi_3OtCDgBZCoGd2paD11NeGX94");
+		console.log(transaction[0]);
+	} catch (error) {
+		console.error(error);
+	}
 })();
 
 

@@ -230,14 +230,14 @@ app.post("/update-payment-intent", async (req, res) => {
 
   try {
     try {
-      if(doneBefore != 1){
+      if (doneBefore != 1) {
         customer = await stripe.customers.create({
           name: name,
           email: email,
         });
         console.log("New customer, here is the name and email: " + req.body.custName + " : " + req.body.custEmail);
       }
-      
+
     } catch {
       console.log("Customer creation failed. Possibly because they already exist. Ignoring for now...")
     }
@@ -259,10 +259,10 @@ app.post("/update-payment-intent", async (req, res) => {
     let totalint = cleanDonation;
 
     if (customer) {
-      console.log("here is what I will be submitting: amount:" + totalint + ", application fee amount is "+ parseInt(req.body.totaltip * 100)+", this goes through");
-      try{
-        console.log("Here is donebefore: "+ doneBefore)
-        if(doneBefore != 1){
+      console.log("here is what I will be submitting: amount:" + totalint + ", application fee amount is " + parseInt(req.body.totaltip * 100) + ", this goes through");
+      try {
+        console.log("Here is donebefore: " + doneBefore)
+        if (doneBefore != 1) {
           console.log("doing update with cust info because doneBefore is false.")
           let paymentIntent = await stripe.paymentIntents.update(
             req.body.PI,
@@ -281,7 +281,7 @@ app.post("/update-payment-intent", async (req, res) => {
               customer: customer.id,
             }
           );
-        }else{
+        } else {
           let paymentIntent = await stripe.paymentIntents.update(
             req.body.PI,
             {
@@ -298,8 +298,8 @@ app.post("/update-payment-intent", async (req, res) => {
             }
           );
         }
-        
-      }catch(e){
+
+      } catch (e) {
         console.log(e);
         let paymentIntent = await stripe.paymentIntents.update(
           req.body.PI,
@@ -317,7 +317,7 @@ app.post("/update-payment-intent", async (req, res) => {
           }
         );
       }
-      
+
     } else {
       console.log("I'm in the else statement, there is no customer");
       let paymentIntent = await stripe.paymentIntents.update(
@@ -671,7 +671,15 @@ app.get("/dashboard", async (req, res) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);  // important that you use jwt.verify not jwt.decode, decode doesn't verify! 
       //MAKE SURE TO SANITIZE USER ID! COULD BE CODE INJECTION!
       let id = decoded.userId;
-      userSQL.query(`select * from users where userid = ${userSQL.escape(id)}`, (err, res2) => {
+      userSQL.query(`select * from users where userid = ${userSQL.escape(id)}`, async (err, res2) => {
+        let fundId = res2[0].fundraisers;
+        let camInfo = await connectSQL(fundId);
+        let userInfo = await JSON.parse(camInfo[0].members)[mysql.escape(id)];
+        let fundsRaised = await userInfo.fundsRaised;
+        let emailsAdded = await userInfo.emailsAdded;
+        let phonesAdded = await userInfo.phonesAdded;
+        let memberGoal = await camInfo[0].memberGoal;
+
         if (!err) {
           if (res2[0].role == "admin") {
             res.render("dashboard", { id, name: res2[0].name, email: res2[0].email });
@@ -679,7 +687,7 @@ app.get("/dashboard", async (req, res) => {
             if (res2[0].fundraisers == null) {
               res.render("join", { id });
             } else {
-              res.render("participantDash", { id, name: res2[0].name, email: res2[0].email });
+              res.render("participantDash", { id, name: res2[0].name, email: res2[0].email, fundsRaised, emailsAdded, phonesAdded, memberGoal});
             }
           }
           console.log(res2);
@@ -738,7 +746,7 @@ app.post("/createcampaign", async (req, res2) => {
             console.log(err);
             randFundId = Math.floor(Math.random() * (999999 - 111111 + 1) + 111111); //todo: better handle possible duplicate ids + implement same feature in other one + maeke join code
           } else {
-            connection.query(`insert into campaigns (camName, id, camAdmin ) values (${mysql.escape("test1")}, ${randFundId},${mysql.escape(getUser(token))});`, (err, res2) => {
+            connection.query(`insert into campaigns (camName, id, camAdmin,members ) values (${mysql.escape("test1")}, ${randFundId},${mysql.escape(getUser(token))}, '{}');`, (err, res2) => {
               if (err) {
                 console.log(err);
                 res2.send("Internal Server Error.");
@@ -779,7 +787,7 @@ function joinCampaign(userid, joincode) {
   return new Promise((resolve, reject) => {
     console.log("join campaign function called")
     let cleanU2 = mysql.escape(userid);
-    connection.query(`update campaigns set members = JSON_SET(members, '$."${cleanU2}"', 0) where joincode = ${mysql.escape(joincode)}`, (err, res) => {
+    connection.query(`update campaigns set members = JSON_SET(members, '$."${cleanU2}"',  JSON_OBJECT('fundsRaised', 0, 'phonesAdded', "[]", 'emailsAdded', "[]")) where joincode = ${mysql.escape(joincode)}`, (err, res) => {
       console.log("t2" + err);
       console.log("thing:" + JSON.stringify(res.affectedRows));
       if (err || res.affectedRows != 1) {
@@ -944,7 +952,7 @@ app.post("/api/submitComment", async (req, res) => {
         console.error("Error executing query:", error);
         return res.sendStatus(500);
       }
-      
+
       console.log("Comment updated successfully:", result, "   Here is the query: ", query);
       return res.sendStatus(200);
     });
